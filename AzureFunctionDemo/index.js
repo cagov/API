@@ -4,7 +4,7 @@ module.exports = async function (context, req) {``
     if (req.query.name || (req.body && req.body.name)) {
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: "Hello NAME2 =  " + (req.query.name || req.body.name)
+            body: "Hello NAME3 =  " + (req.query.name || req.body.name)
         };
     }
     else {
