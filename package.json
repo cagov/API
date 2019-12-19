@@ -1,10 +1,15 @@
 {
-  "name": "AzureFunctionDemo",
+  "name": "ca-alpha-functions",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cagov/FunctionApps.git"
+  },
+  "license": "ISC"
 }
