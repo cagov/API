@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "request": "^2.88.0"
+  },
   "devDependencies": {},
   "repository": {
     "type": "git",
