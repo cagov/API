@@ -1,9 +1,9 @@
 module.exports = function (context, req) {
     const icalUrl = 'https://calendar.google.com/calendar/ical/alpha.ca.gov_m9372uj21m6qdgrqg4olkdgo4c%40group.calendar.google.com/public/basic.ics';
 
-    context.log('*****************************************************');
-    context.log('JavaScript HTTP trigger function processed a request.');
-    context.log('Query = ' + JSON.stringify(req.query));
+    //context.log('*****************************************************');
+    //context.log('JavaScript HTTP trigger function processed a request.');
+    //context.log('Query = ' + JSON.stringify(req.query));
 
     const https = require("https");
     https.get(icalUrl, response => {
@@ -13,7 +13,7 @@ module.exports = function (context, req) {
         response.on('data', function (chunk) {
             i++;
             body += chunk;
-            console.log('BODY Part: ' + i);
+            //console.log('BODY Part: ' + i);
         });
         response.on('end', function () {
     
@@ -27,7 +27,7 @@ module.exports = function (context, req) {
             };
             context.res = res;
 
-            console.log('Finished');
+            //console.log('Finished');
             context.done();
         });
 
