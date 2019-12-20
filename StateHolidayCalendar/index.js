@@ -5,8 +5,6 @@ module.exports = function (context, req) {
     //context.log('JavaScript HTTP trigger function processed a request.');
     //context.log('Query = ' + JSON.stringify(req.query));
 
-//Non-ICS
-
     const https = require("https");
     https.get(icalUrl, response => {
   
@@ -15,10 +13,8 @@ module.exports = function (context, req) {
         response.on('data', function (chunk) {
             i++;
             body += chunk;
-            //console.log('BODY Part: ' + i);
         });
         response.on('end', function () {
-    
             res = { 
                 isRaw: 'true', 
                 body: body,
@@ -32,7 +28,5 @@ module.exports = function (context, req) {
             //console.log('Finished');
             context.done();
         });
-
-
       });
 };
