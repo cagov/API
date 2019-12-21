@@ -3,6 +3,11 @@ Used to develop Function As A Service Apps in support of Alpha.CA.gov.
 
 
 # Setup 
+## Install "Azure Functions" Extention
+Id: ms-azuretools.vscode-azurefunctions
+Publisher: Microsoft
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions
+
 ## Install Azure Functions Core Tools
 - https://github.com/Azure/azure-functions-core-tools#installing
 
