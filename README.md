@@ -2,8 +2,17 @@
 Used to develop Function As A Service Apps in support of Alpha.CA.gov.
 
 
-Make sure to install ...
-https://github.com/Azure/azure-functions-core-tools#installing
+# Setup 
+## Install Azure Functions Core Tools
+- https://github.com/Azure/azure-functions-core-tools#installing
 
-Azure Javascript Reference
-https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+### HomeBrew Installation (For Debugging)
+- /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+- brew tap azure/functions           
+- brew install azure-functions-core-tools@3                                                         
+
+# Azure Javascript Reference
+- https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+
+# Running Production Service
+- https://fa-go-alph-d-001.azurewebsites.net/api/StateHolidayCalendar.ics
