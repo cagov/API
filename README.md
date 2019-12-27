@@ -21,3 +21,9 @@ VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-azur
 
 # Running Production Service
 - https://fa-go-alph-d-001.azurewebsites.net/api/StateHolidayCalendar.ics
+
+# Postman Documentation
+- https://documenter.getpostman.com/view/9918160/SWLb8Uep
+
+# Github Repo
+- https://github.com/cagov/FunctionApps
