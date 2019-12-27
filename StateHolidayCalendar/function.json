@@ -7,8 +7,7 @@
       "name": "req",
       "route": "StateHolidayCalendar.ics",
       "methods": [
-        "get",
-        "post"
+        "get"
       ]
     },
     {
