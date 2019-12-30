@@ -5,7 +5,7 @@ module.exports = function (context, req) {
     //context.log('JavaScript HTTP trigger function processed a request.');
     //context.log('Query = ' + JSON.stringify(req.query));
 
-    const https = require("https");
+    const https = require('https');
     https.get(icalUrl, response => {
   
         var body = '';
