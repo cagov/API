@@ -21,7 +21,7 @@ VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-azur
 - https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
 
 ## Running Production Service
-- https://fa-go-alph-d-001.azurewebsites.net/api/StateHolidayCalendar.ics
+- https://fa-go-alph-d-001.azurewebsites.net/ConnectionTest
 
 ## Postman Documentation
 - https://documenter.getpostman.com/view/9918160/SWLb8Uep
