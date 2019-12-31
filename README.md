@@ -16,14 +16,15 @@ VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-azur
 - brew tap azure/functions           
 - brew install azure-functions-core-tools@3                                                         
 
-# Azure Javascript Reference
+# Reference
+## Azure Javascript Reference
 - https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
 
-# Running Production Service
+## Running Production Service
 - https://fa-go-alph-d-001.azurewebsites.net/api/StateHolidayCalendar.ics
 
-# Postman Documentation
+## Postman Documentation
 - https://documenter.getpostman.com/view/9918160/SWLb8Uep
 
-# Github Repo
+## Github Repo
 - https://github.com/cagov/FunctionApps
