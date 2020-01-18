@@ -6,16 +6,21 @@ module.exports = async function (context, req) {
     if (input) {
         let zips = JSON.parse(fs.readFileSync(context.executionContext.functionName + '/data.json','utf8'));
         let out = [];
-        zips.forEach(item => {
+
+var item = zips.filter( item3 =>
+    Object.keys(item3)[0]==input 
+)[0];
+
+       // zips.forEach(item => {
             var zip = Object.keys(item)[0];
-            if(zip === input) {
+           // if(zip === input) {
                 let cityout = [];
 
                 item[zip].forEach(cityname => cityout.push({"name":cityname}));
 
                 out.push({"zip":zip, "cities":cityout});
-            }
-        });
+         //   }
+      //  });
         
         if(out.length==0) 
             context.res = {
