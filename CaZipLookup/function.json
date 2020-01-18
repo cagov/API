@@ -5,7 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "CaZipLookup/{zip:int?}",
+      "route": "CaZipLookup/{zip?}",
       "methods": [ "get" ]
     },
     {
