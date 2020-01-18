@@ -9,32 +9,27 @@ module.exports = async function (context, req) {
         zips.forEach(item => {
             var zip = Object.keys(item)[0];
             if(zip === input) {
-                let cities = item[zip];
                 let cityout = [];
 
-                for(var key2 in cities)
-                    cityout.push({"name":cities[key2]});
+                item[zip].forEach(cityname => cityout.push({"name":cityname}));
 
                 out.push({"zip":zip, "cities":cityout});
             }
-            });
+        });
         
         if(out.length==0) 
             context.res = {
-                // status: 200, /* Defaults to 200 */
                 status: 404,
                 body: "Zip not found - " + input
             };
         else
             context.res = {
-                // status: 200, /* Defaults to 200 */
                 body: out,
                 headers: {
                     'Content-Type' : 'application/json'
                 }
             };
-    }
-    else 
+    } else 
         context.res = {
             status: 400,
             body: "Please pass a zip on the path"
