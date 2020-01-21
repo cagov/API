@@ -17,34 +17,17 @@ module.exports = async function (context, req) {
 
         
         if (item) {
-
-
-//        var results = zips.filter( x =>
-//            Object.keys(x)[0]==input 
-//        );
-
-//        if(results.length==1) {
             let out = [];
-//            var item = results[0];
+            let cityout = [];
+            item[input].forEach(cityname => cityout.push({"name":cityname}));
+            out.push({"zip":input, "cities":cityout});
 
-        // zips.forEach(item => {
-                var zip = Object.keys(item)[0];
-            // if(zip === input) {
-                    let cityout = [];
-
-                    item[zip].forEach(cityname => cityout.push({"name":cityname}));
-
-                    out.push({"zip":zip, "cities":cityout});
-            //   }
-        //  });
-        context.res = {
-            body: out,
-            headers: {
-                'Content-Type' : 'application/json'
-            }
-        };
-
-
+            context.res = {
+                body: out,
+                headers: {
+                    'Content-Type' : 'application/json'
+                }
+            };
         } else 
             context.res = {
                 status: 404,
