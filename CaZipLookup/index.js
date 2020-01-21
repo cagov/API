@@ -8,22 +8,16 @@ module.exports = async function (context, req) {
         
         var item;
         for (var i in zips) {
-            var row = zips[i];
-            if (Object.keys(row)[0]==input) {
-                item = row;
-                break;
-            }
+            item = zips[i][input];
+            if (item) break;
         }
 
-        
         if (item) {
-            let out = [];
             let cityout = [];
-            item[input].forEach(cityname => cityout.push({"name":cityname}));
-            out.push({"zip":input, "cities":cityout});
+            item.forEach(cityname => cityout.push({"name":cityname}));
 
             context.res = {
-                body: out,
+                body: {"zip":input, "cities":cityout},
                 headers: {
                     'Content-Type' : 'application/json'
                 }
