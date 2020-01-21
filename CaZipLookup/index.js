@@ -6,13 +6,26 @@ module.exports = async function (context, req) {
     if (input) {
         let zips = JSON.parse(fs.readFileSync(context.executionContext.functionName + '/data.json','utf8'));
         
-        var results = zips.filter( x =>
-            Object.keys(x)[0]==input 
-        );
+        var item;
+        for (var i in zips) {
+            var row = zips[i];
+            if (Object.keys(row)[0]==input) {
+                item = row;
+                break;
+            }
+        }
 
-        if(results.length==1) {
+        
+        if (item) {
+
+
+//        var results = zips.filter( x =>
+//            Object.keys(x)[0]==input 
+//        );
+
+//        if(results.length==1) {
             let out = [];
-            var item = results[0];
+//            var item = results[0];
 
         // zips.forEach(item => {
                 var zip = Object.keys(item)[0];
