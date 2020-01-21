@@ -1,28 +1,24 @@
-module.exports = async function (context, req) {
-    const fs = require('fs');
+const fs = require('fs');
+const zips = JSON.parse(fs.readFileSync('CaZipLookup/data.json','utf8'));
 
-    let input = context.req.params.zip;
+module.exports = async function (context, req) {
+    const input = context.req.params.zip;
 
     if (input) {
-        let zips = JSON.parse(fs.readFileSync(context.executionContext.functionName + '/data.json','utf8'));
-        
-        var item;
-        for (var i in zips) {
-            item = zips[i][input];
-            if (item) break;
+        let cities = [];
+        for (const ziprow of zips) {
+            cities = ziprow[input];
+            if (cities) break;
         }
 
-        if (item) {
-            let cityout = [];
-            item.forEach(cityname => cityout.push({"name":cityname}));
-
+        if (cities) 
             context.res = {
-                body: {"zip":input, "cities":cityout},
+                body: {"zip":input, "cities":cities.map(cityname => ({"name" : cityname} ))},
                 headers: {
                     'Content-Type' : 'application/json'
                 }
             };
-        } else 
+        else 
             context.res = {
                 status: 404,
                 body: "Zip not found - " + input
