@@ -10,7 +10,6 @@ Could combine lane closures with full highway closures and chain warnings
 
 ## Interface
 
-
 Make the data available to client side applications who want to query by:
 
 - Route identifier
@@ -19,7 +18,6 @@ Make the data available to client side applications who want to query by:
 
 ## Example
 
-Call this endpoint: http://localhost:7071/LaneClosures/US-50?lat1=38.573832&lat2=38.956177&lon1=-121.490044&lon2=-119.942837&direction=East
+Call this endpoint: https://api.alpha.ca.gov/LaneClosures/US-50?lat1=38.573832&lat2=38.956177&lon1=-121.490044&lon2=-119.942837&direction=East
 
-
-api.apha.ca.gov/LaneClosures/US-50?lat1=38.573832&lat2=38.956177&lon1=-121.490044&lon2=-119.942837&direction=East
+More documentation <a href="https://documenter.getpostman.com/view/9918160/SWLb8Uep?version=latest#acf4d679-b0cf-4166-a614-049fd1870732">on postman</a>
