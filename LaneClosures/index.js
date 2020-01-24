@@ -1,12 +1,14 @@
-const geolib = require('geolib');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const uuidv1 = require('uuid/v1');
+const streamToString = require('./stream-blob.js');
+const parseLCS = require('./parse-lanedata.js');
 
 module.exports = async function (context, req) {
   const routeName = context.req.params.route;
 
   let AZURE_STORAGE_CONNECTION_STRING = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-
+  console.log(AZURE_STORAGE_CONNECTION_STRING);
+  
   // Create the BlobServiceClient object which will be used to create a container client
   const blobServiceClient = await BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
@@ -55,67 +57,3 @@ module.exports = async function (context, req) {
     };
   }
 };
-
-// A helper function used to read a Node.js readable stream into a string
-async function streamToString(readableStream) {
-  console.log('hello')
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    readableStream.on("data", (data) => {
-      console.log('has chunk')
-      chunks.push(data.toString());
-    });
-    readableStream.on("end", () => {
-      console.log('and ended')
-      resolve(chunks.join(""));
-    });
-    readableStream.on("error", reject);
-  });
-}
-
-function parseLCS(lcs, direction, bbox) {
-  let finalObstructions = [];
-  let possibles = [];
-  if(direction) {
-    lcs.forEach( (issue) => {
-      if(issue.lcs.location.travelFlowDirection.toLowerCase().indexOf(direction.toLowerCase()) > -1) {
-        possibles.push(issue);
-      }
-    })  
-  } else {
-    possibles = lcs;
-    console.log("NO DIRECTIONS")
-  }
-
-  possibles.forEach( (issue) => {
-    let lon = issue.lcs.location.begin.beginLongitude;
-    let lat = issue.lcs.location.begin.beginLatitude;
-    /*
-    let inPoly = geolib.isPointInPolygon({ latitude: lat, longitude: lon }, [
-      { latitude: coords.startCoords[1], longitude: coords.startCoords[0] },
-      { latitude: coords.endCoords[1], longitude: coords.startCoords[0] },
-      { latitude: coords.endCoords[1], longitude: coords.endCoords[0] },
-      { latitude: coords.startCoords[1], longitude: coords.endCoords[0] },
-    ]);
-    */
-    let inPoly = geolib.isPointInPolygon({ latitude: lat, longitude: lon }, [
-      { latitude: bbox.lat1, longitude: bbox.lon1 },
-      { latitude: bbox.lat2, longitude: bbox.lon1 },
-      { latitude: bbox.lat2, longitude: bbox.lon2 },
-      { latitude: bbox.lat1, longitude: bbox.lon2 },
-    ]);
-    
-    if(inPoly) {
-      console.log('inside poly')
-      if(issue.lcs.closure.isCHINReportable == "true") {
-        finalObstructions.push(issue);
-      } else {
-        console.log('not chin reportable')
-      }
-      console.log(issue.lcs.closure.isCHINReportable)
-    } else {
-      console.log('dropped outside poly')
-    }
-  })
-  return finalObstructions;
-}
