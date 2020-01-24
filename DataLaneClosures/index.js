@@ -21,6 +21,9 @@ module.exports = async function (context, myTimer) {
   logInfo = await getData('http://cwwp2.dot.ca.gov/data/d10/lcs/lcsStatusD10.json');
   logInfo = await getData('http://cwwp2.dot.ca.gov/data/d11/lcs/lcsStatusD11.json');
   logInfo = await getData('http://cwwp2.dot.ca.gov/data/d12/lcs/lcsStatusD12.json');
+  // couple KML files here with data on full road closures and CHP events like chain control that aren't in lane closure data
+  logInfo = await writeKML('http://quickmap.dot.ca.gov/data/chin.kml?key='+Math.random(), 'closed-roads.kml')
+  logInfo = await writeKML('http://quickmap.dot.ca.gov/data/chp-only.kml?key='+Math.random(), 'chp-events.kml')
 
   roadMap.forEach( async (value, key, map) => {
     let fileData = [];
@@ -51,6 +54,17 @@ module.exports = async function (context, myTimer) {
       }
     })
     return('parsed '+url)
+  }
+
+  async function writeKML(url, filename) {
+    const response = await fetch(url);
+    const txt = await response.text();
+    let blobName = filename;
+    let blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    let uploadBlobResponse = await blockBlobClient.upload(txt, txt.length);
+    console.log("KML Blob was uploaded successfully. requestId: ", uploadBlobResponse.requestId);
+    return('done')
   }
 };
 
