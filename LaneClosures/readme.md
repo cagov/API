@@ -16,3 +16,10 @@ Make the data available to client side applications who want to query by:
 - Route identifier
 - direction of travel
 - bounding box
+
+## Example
+
+Call this endpoint: http://localhost:7071/LaneClosures/US-50?lat1=38.573832&lat2=38.956177&lon1=-121.490044&lon2=-119.942837&direction=East
+
+
+api.apha.ca.gov/LaneClosures/US-50?lat1=38.573832&lat2=38.956177&lon1=-121.490044&lon2=-119.942837&direction=East
