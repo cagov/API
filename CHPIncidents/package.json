@@ -1,0 +1,17 @@
+{
+  "name": "CHPIncidents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/storage-blob": "^12.0.2",
+    "geolib": "^3.2.1",
+    "xml2js": "^0.4.23"
+  }
+}
