@@ -31,14 +31,14 @@ module.exports = async function (context, req) {
     }
   
     parseXMLString(details, function (err, result) {
+      console.log(result.kml.Document[0])
       if(result.kml.Document[0].Placemark) {
         result.kml.Document[0].Placemark.forEach( (incident) => {
-          console.log(incident.Point[0].coordinates[0])
           let coords = incident.Point[0].coordinates[0].split(',');  
-          console.log(coords);
-          let lon = parseFloat(coords[0]);
-          let lat = parseFloat(coords[1]);
-          let inPoly = geolib.isPointInPolygon({ latitude: lat, longitude: lon }, [
+          let inPoly =false;
+          let lon = coords[0];
+          let lat = coords[1];
+          inPoly = geolib.isPointInPolygon({ latitude: lat, longitude: lon }, [
             { latitude: bbox.lat1, longitude: bbox.lon1 },
             { latitude: bbox.lat2, longitude: bbox.lon1 },
             { latitude: bbox.lat2, longitude: bbox.lon2 },
