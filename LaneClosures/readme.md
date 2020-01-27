@@ -1,6 +1,6 @@
 # Lane Closures
 
-Possible API
+Retrieve current lane closure information for a specific highway inside a bounding box
 
 ## Data source
 
