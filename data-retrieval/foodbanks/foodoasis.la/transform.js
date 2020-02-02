@@ -20,8 +20,8 @@ csvtojsonV2()
     obj.geometry.coordinates = [parseFloat(item.longitude), parseFloat(item.latitude)];
     obj.properties.title = item.name;
     obj.properties.website = item.website;
-    obj.properties.address = item.address;
-    obj.properties.address2 = item.address2;
+    obj.properties.address_1 = item.address;
+    obj.properties.address_2 = item.address2;
     obj.properties.city = item.city;
     obj.properties.state = item.state;
     obj.properties.zip = item.zip;
