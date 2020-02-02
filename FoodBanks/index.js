@@ -1,4 +1,4 @@
-const foodData = require('./foods-test.json');
+const foodData = require('./foods.json');
 const haversine = require('haversine');
 
 module.exports = async function (context, req) {
