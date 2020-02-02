@@ -9180,6 +9180,744 @@
         "zip": "90604",
         "phone": "562.777.2475"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.417695,
+          37.787763
+        ]
+      },
+      "properties": {
+        "title": "Raphael House of San Francisco: Shelter for Homeless Families",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94109",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.407809,
+          37.77995
+        ]
+      },
+      "properties": {
+        "title": "City Team Ministries",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "95112",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.471791,
+          37.717509
+        ]
+      },
+      "properties": {
+        "title": "Temple United Methodist Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94132",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.490283,
+          37.7751
+        ]
+      },
+      "properties": {
+        "title": "Richmond District Neighborhood Center",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94121",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.469632,
+          37.743089
+        ]
+      },
+      "properties": {
+        "title": "Covenant Presbyterian Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94116",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.410023,
+          37.798013
+        ]
+      },
+      "properties": {
+        "title": "Salvation Army Family Services, Chinatown Court",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94133",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.435563,
+          37.791273
+        ]
+      },
+      "properties": {
+        "title": "Food Runners",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94115",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.43184,
+          37.781276
+        ]
+      },
+      "properties": {
+        "title": "West Bay Conference Center",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94115",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.426634,
+          37.779794
+        ]
+      },
+      "properties": {
+        "title": "Bethel A M E Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94115",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.443948,
+          37.783488
+        ]
+      },
+      "properties": {
+        "title": "St Andrew Missionary Baptist Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94143",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.414488,
+          37.789722
+        ]
+      },
+      "properties": {
+        "title": "Mary Elizabeth Inn",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94109",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.469873,
+          37.730399
+        ]
+      },
+      "properties": {
+        "title": "St Francis Episcopal Church Food Pantry",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94127",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.389581,
+          37.731805
+        ]
+      },
+      "properties": {
+        "title": "Bayview TLC Family Resource Center",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.446059,
+          37.784336
+        ]
+      },
+      "properties": {
+        "title": "Booker T. Washington Community Svce Center.",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94115",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.412045,
+          37.784676
+        ]
+      },
+      "properties": {
+        "title": "Youth With A Mission",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.457003,
+          37.723904
+        ]
+      },
+      "properties": {
+        "title": "Ingleside Community Center",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94112",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.393671,
+          37.731746
+        ]
+      },
+      "properties": {
+        "title": "Dr. Charles Drew College Preparatory Academy",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.397134,
+          37.782551
+        ]
+      },
+      "properties": {
+        "title": "Health Care of Homeless Vets",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94107",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.491896,
+          37.734324
+        ]
+      },
+      "properties": {
+        "title": "First United Presbyterian Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94132",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.393867,
+          37.795341
+        ]
+      },
+      "properties": {
+        "title": "CUSA",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94111",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.413219,
+          37.782234
+        ]
+      },
+      "properties": {
+        "title": "St Anthony's Emergency Food Pantry",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.400852,
+          37.781186
+        ]
+      },
+      "properties": {
+        "title": "Salvation Army Asian American Yerba Buena",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.412202,
+          37.783505
+        ]
+      },
+      "properties": {
+        "title": "San Francisco City Impact",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.40147,
+          37.7629
+        ]
+      },
+      "properties": {
+        "title": "St. Gregory of Nyssa - Food Pantry",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.4156483,
+          37.7572377
+        ]
+      },
+      "properties": {
+        "title": "Free The Need",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.454095,
+          37.732135
+        ]
+      },
+      "properties": {
+        "title": "Free The Need",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94127",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.439664,
+          37.71719
+        ]
+      },
+      "properties": {
+        "title": "Iglesia Bautista Balboa Eben-ezer",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94112",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.417709,
+          37.753661
+        ]
+      },
+      "properties": {
+        "title": "Mission Presbyterian Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.420782,
+          37.728231
+        ]
+      },
+      "properties": {
+        "title": "Portola Baptist Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94134",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.411697,
+          37.785291
+        ]
+      },
+      "properties": {
+        "title": "Glide Memorial United Methodist Church: Soup Kitchen & More",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.419007,
+          37.783819
+        ]
+      },
+      "properties": {
+        "title": "Project Open Hand",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94109",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.435534,
+          37.739834
+        ]
+      },
+      "properties": {
+        "title": "New Life Chinese Lutheran Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94131",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.392578,
+          37.735729
+        ]
+      },
+      "properties": {
+        "title": "Our Lady of Lourdes Parish",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.39631,
+          37.72126
+        ]
+      },
+      "properties": {
+        "title": "Evergreen Baptist Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.421076,
+          37.754385
+        ]
+      },
+      "properties": {
+        "title": "Salvation Army Family Services",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.393815,
+          37.754356
+        ]
+      },
+      "properties": {
+        "title": "San Francisco Food Bank",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94107",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.4146,
+          37.74791
+        ]
+      },
+      "properties": {
+        "title": "St Anthony de Padua Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.45971,
+          37.7868
+        ]
+      },
+      "properties": {
+        "title": "St John's Presbyterian Church",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94118",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.39523,
+          37.75678
+        ]
+      },
+      "properties": {
+        "title": "Potrero Hill Family Resource Center",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94107",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.373237,
+          37.729016
+        ]
+      },
+      "properties": {
+        "title": "Hunters Point Food Pantry - GIRLS 2000",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.393996,
+          37.73637
+        ]
+      },
+      "properties": {
+        "title": "St Paul Tabernacle Baptist",
+        "website": "",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94124",
+        "phone": ""
+      }
     }
   ]
 }
