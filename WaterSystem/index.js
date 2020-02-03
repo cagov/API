@@ -1,0 +1,46 @@
+let systemGeoJson = require('./watersystems.json', 'utf8');
+// systemGeoJson = require('./drinking-water-water-systems-boundaries-json.json');
+const geolib = require('geolib');
+
+module.exports = async function (context, req) {
+  if (req.query.lat || (req.body && req.body.lon)) {
+    // we have a point, find the corresponding systems
+    let respBody= [];
+    let uniqueFoundSystems = new Map();
+    systemGeoJson.features.forEach( (system) => {
+      if(system.geometry) {
+        let inPolygon = false;
+        system.geometry.coordinates.forEach( (shapeSet) => {
+          shapeSet.forEach( (shapePoints) => {
+            let refinedGeometry = [];
+            shapePoints.forEach( (shape) => {
+              let obj = {}
+              obj.latitude = shape[1];
+              obj.longitude = shape[0];
+              refinedGeometry.push(obj);  
+            })
+            inPolygon = geolib.isPointInPolygon({ latitude: parseFloat(req.query.lat), longitude: parseFloat(req.query.lon) }, refinedGeometry);
+          })
+        })
+        if(inPolygon) {
+          uniqueFoundSystems.set(system.properties.pwsid,system)
+          // respBody.push(system.properties)
+        }
+      }
+    })
+    uniqueFoundSystems.forEach( (sys) => {
+      respBody.push(sys)
+    })
+    context.res = {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(respBody)
+    };
+  } else {
+    context.res = {
+      status: 400,
+      body: "Please pass a lat and lon on the query string"
+    };
+  }
+};
