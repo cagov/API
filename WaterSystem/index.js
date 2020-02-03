@@ -1,6 +1,11 @@
 let systemGeoJson = require('./watersystems.json', 'utf8');
 // systemGeoJson = require('./drinking-water-water-systems-boundaries-json.json');
 const geolib = require('geolib');
+const allSystems = require('./all-water-systems-list.json');
+let systemMap = new Map();
+allSystems.forEach( (system) => {
+  systemMap.set(system['Water System No'],system);
+})
 
 module.exports = async function (context, req) {
   if (req.query.lat || (req.body && req.body.lon)) {
@@ -29,6 +34,9 @@ module.exports = async function (context, req) {
       }
     })
     uniqueFoundSystems.forEach( (sys) => {
+      if(systemMap.get(sys.properties.pwsid)) {
+        sys.properties.systemData = systemMap.get(sys.properties.pwsid);
+      }
       respBody.push(sys)
     })
     context.res = {
