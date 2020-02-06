@@ -44,14 +44,20 @@ case 'next':
     const month = parseInt(next.toLocaleDateString(locales, { month: 'numeric' }))
     const day_of_month = parseInt(next.toLocaleDateString(locales, { day: 'numeric' }))
     const day_of_week = next.toLocaleDateString(locales, { weekday: 'long' })
-    const date = next.toLocaleDateString(locales, { dateStyle: 'full' })
+    const date = next.toLocaleDateString(locales, { 
+        year: 'numeric', month: 'numeric', day: 'numeric'
+     })
     const time_zone = next.toLocaleDateString(locales, { timeZoneName: 'long' })
+    const date_full = next.toLocaleDateString(locales, { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    })
     const name = "Presidents' Day"
 
     context.res = {
         body: {
             date,
             name,
+            date_full,
             day_of_week,
             month_name,month, 
             day_of_month,
