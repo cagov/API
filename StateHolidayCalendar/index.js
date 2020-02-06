@@ -57,7 +57,7 @@ case 'next':
             day_of_month,
             year:next.getUTCFullYear(),
             time_zone,
-            data_iso:next.toISOString()
+            date_iso:next.toISOString()
         },
         headers: {
             'Content-Type' : 'application/json'
