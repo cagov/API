@@ -33,16 +33,17 @@ case '.ics':
     })
     break
 case 'next':
-    context.res.body = 'next time'
+    context.res = {
+        body: {day_of_week:"Monday",month_name:"February",month:2, day_of_month:17, year:2020, name:"Presidents' Day", date:"2020-02-17T00:00:00.000Z"},
+        headers: {
+            'Content-Type' : 'application/json'
+        }
+    };
     context.done()
     break
 default:
     context.res.body = 'nevermind'
     context.done()
 }
-
-
-
-
 
 }
