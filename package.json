@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "setup": "npm install",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
   "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/cagov/FunctionApps.git"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "CHPIncidents": "file:CHPIncidents",
+    "FoodBanks": "file:FoodBanks"
+  }
 }
