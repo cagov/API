@@ -20,7 +20,7 @@ module.exports = async function (context, req) {
     }
   } else {
     context.res = {
-      body: JSON.stringify({ "violations": []}),
+      body: JSON.stringify([]),
       headers: {
         'Content-Type': 'application/json'
       }
