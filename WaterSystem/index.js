@@ -1,5 +1,6 @@
 //let systemGeoJson = require('./watersystems.json', 'utf8');
-let topSystems = require('./water-systems-top.json', 'utf8')
+let topRightSystems = require('./water-systems-top-right.json', 'utf8')
+let topLeftSystems = require('./water-systems-top-left.json', 'utf8')
 let bottomSystems = require('./water-systems-bottom.json', 'utf8')
 // systemGeoJson = require('./drinking-water-water-systems-boundaries-json.json');
 const geolib = require('geolib');
@@ -16,9 +17,15 @@ module.exports = async function (context, req) {
     let uniqueFoundSystems = new Map();
 
     let midPoint = 37.046741;
+    let leftOfSac = -121.868589;
     let systemGeoJson = bottomSystems;
     if(req.query.lat >= midPoint) {
-      systemGeoJson = topSystems;
+      // systemGeoJson = topSystems;
+      if(req.query.lon >= leftOfSac) {
+        systemGeoJson = topLeftSystems;
+      } else {
+        systemGeoJson = topRightSystems;
+      }
     }
     systemGeoJson.features.forEach( (system) => {
       if(system.geometry) {
