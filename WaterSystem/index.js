@@ -1,4 +1,6 @@
-let systemGeoJson = require('./watersystems.json', 'utf8');
+//let systemGeoJson = require('./watersystems.json', 'utf8');
+let topSystems = require('./water-systems-top.json', 'utf8')
+let bottomSystems = require('./water-systems-bottom.json', 'utf8')
 // systemGeoJson = require('./drinking-water-water-systems-boundaries-json.json');
 const geolib = require('geolib');
 const allSystems = require('./all-water-systems-list.json');
@@ -12,6 +14,12 @@ module.exports = async function (context, req) {
     // we have a point, find the corresponding systems
     let respBody= [];
     let uniqueFoundSystems = new Map();
+
+    let midPoint = 37.046741;
+    let systemGeoJson = bottomSystems;
+    if(req.query.lat >= midPoint) {
+      systemGeoJson = topSystems;
+    }
     systemGeoJson.features.forEach( (system) => {
       if(system.geometry) {
         let inPolygon = false;
