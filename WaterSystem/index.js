@@ -25,12 +25,11 @@ module.exports = async function (context, req) {
               refinedGeometry.push(obj);  
             })
             inPolygon = geolib.isPointInPolygon({ latitude: parseFloat(req.query.lat), longitude: parseFloat(req.query.lon) }, refinedGeometry);
+            if(inPolygon) {
+              uniqueFoundSystems.set(system.properties.pwsid,system)
+            }
           })
         })
-        if(inPolygon) {
-          uniqueFoundSystems.set(system.properties.pwsid,system)
-          // respBody.push(system.properties)
-        }
       }
     })
     uniqueFoundSystems.forEach( (sys) => {
