@@ -30,22 +30,22 @@ module.exports = async function (context, req) {
             const fullhtml = await response.text()
             const html = fullhtml.split(pagestartmarker,2)[1]
 
-            const split = html
+            const jsondataset = html
                 .split(jsonstartmarker)
                 .map(
-                    (x,i)=>
+                    (value,i)=>
                         i === 0
                         ? null
                         : JSONlogparse(
-                            x
+                            value
                             .split(jsonendmarker,1)[0]
-                            .replace(/(\r|\n|\t)/gm,'')
+                            .replace(/(\n|\r|\t)/g,'')
                             )
                     )
 
             context.res = 
                 {
-                    body: split,
+                    body: jsondataset,
                     headers: {
                         'Content-Type' : 'application/json'
                     }
