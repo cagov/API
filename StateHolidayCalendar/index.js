@@ -36,7 +36,7 @@ case 'next':
 //Date docs here...
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
 
-    const next = new Date("2020-02-17T00:00:00-08:00"); //offset 8 hours to UTC to get it to pacific
+    const next = new Date("2020-03-31T00:00:00-08:00"); //offset 8 hours to UTC to get it to pacific
     const locales = 'en-US'
 
     //const next = new Date("2020-01-01T-8:00")
@@ -51,7 +51,7 @@ case 'next':
     const date_full = next.toLocaleDateString(locales, { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     })
-    const name = "Presidents' Day"
+    const name = "Cesar Chavez Day"
 
     context.res = {
         body: {
