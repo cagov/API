@@ -1,3 +1,8 @@
+
+const citiesurl = "https://www.shelterlistings.org/state/california.html"
+const citiesmatchpat = /<a\s+href="https:\/\/www\.shelterlistings\.org\/city\/(\S+)-ca\.html"\s*>\s*([\w\s]+)\s*<\/a>/gm
+const citiesmatch = citiesmatchpat.compile(citiesmatchpat)
+
 const dataurl = "https://www.shelterlistings.org/city/"
 const pagestartmarker = "Search listings by <a href=\""
 const jsonstartmarker = /<script type="application\/ld\+json">/
@@ -8,12 +13,36 @@ const soft404page = "https://www.shelterlistings.org/nocity.html"
 module.exports = async function (context, req) {
     const cityname = context.req.params.cityname
 
-    if(!cityname)
-        context.res = {
-            status: 400,
-            body: "Please pass a cityname on the path"
+    if(!cityname) {
+        const response = await fetch(citiesurl)
+
+        if (!response.ok)
+            context.res = {
+                status: response.status,
+                body: `Error getting data - ${await response.text()}`
+            }
+        else {
+            const html = await response.text()
+
+            const results = []
+            let onerow = []
+            do {
+                onerow = citiesmatch.exec(html)
+                if (onerow) 
+                    results.push(
+                        {
+                            //fullmatch : onerow[0],
+                            code : onerow[1],
+                            name : onerow[2],
+                        }
+                    )
+            } while (onerow);
+
+            context.res = {
+                body: results
+            }
         }
-    else {
+    } else {
         const response = await fetch(`${dataurl+cityname}-ca.html`)
 
         if (!response.ok)
