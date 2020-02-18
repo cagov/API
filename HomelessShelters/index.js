@@ -53,46 +53,54 @@ module.exports = async function (context, req) {
         else if(response.url.startsWith(soft404page))
             context.res = {
                 status: 404,
-                body: `No city data for "${cityname}"`
+                body: `Invalid city code - "${cityname}"`
             }
         else {
             //looking for these markers...<script type="application/ld+json">
             const html = (await response.text()).split(pagestartmarker,2)[1]
 
-            let results = []
-
-            html
-                .split(jsonstartmarker)
-                .forEach((value,i) => {
-                    if(i > 0) {
-                        const jsonsplit = value.split(jsonendmarker,2)
-                        const url = jsonsplit[1].match(linkpattern)[0]
-
-                        let x = JSONlogparse(
-                            jsonsplit[0]
-                            .replace(/(\n|\r|\t)/g,'')
-                            )
-
-                        results.push({
-                                "name" : x.name,
-                                "address" : x.address.streetAddress,
-                                "city" : x.address.addressLocality,
-                                "state" : x.address.addressRegion,
-                                "zipcode" : x.address.postalCode,
-                                "phone" : x.telephone,
-                                url,
-                                "description" : x.description
-                            })
-                    }
-                })
-
-            context.res = 
-                {
-                    body: results,
-                    headers: {
-                        'Content-Type' : 'application/json'
-                    }
+            if(!html) 
+                context.res = {
+                    status: 404,
+                    body: `No city data for "${cityname}"`
                 }
+            else {
+                let results = []
+
+                html
+                    .split(jsonstartmarker)
+                    .forEach((value,i) => {
+                        if(i > 0) {
+                            const jsonsplit = value.split(jsonendmarker,2)
+                            const url = jsonsplit[1].match(linkpattern)[0]
+
+                            let x = JSONlogparse(
+                                jsonsplit[0]
+                                .replace(/(\n|\r|\t)/g,'')
+                                )
+
+                            results.push({
+                                    "name" : x.name,
+                                    "address" : x.address.streetAddress,
+                                    "city" : x.address.addressLocality,
+                                    "state" : x.address.addressRegion,
+                                    "zipcode" : x.address.postalCode,
+                                    "phone" : x.telephone,
+                                    url,
+                                    "description" : x.description
+                                })
+                        }
+                    })
+
+                context.res = 
+                    {
+                        body: results,
+                        headers: {
+                            'Content-Type' : 'application/json'
+                        }
+                    }
+            }
+
         }
 
     }
