@@ -11,7 +11,7 @@ const linkpattern = /https:\/\/www.shelterlistings.org\/details\/\d+\//
 const soft404page = "https://www.shelterlistings.org/nocity.html"
 
 const jsoncorrections = [
-    {find:/(\n|\r|\t)/g, fix:""},
+    {find:/(\n|\r|\t|\x0b)/g, fix:""},
     {find:/646 \"a\" St/g, fix:"646 \\\"a\\\" St"}
 ]
 
@@ -201,10 +201,11 @@ function JSONlogparse(s) {
     
     try {
         return JSON.parse(s, (key, value) => {
-            console.log(`${key} - ${value}`); // log the current property name, the last is "".
+            //console.log(`${key} - ${value}`); // log the current property name, the last is "".
             return value     // return the unchanged property value.
             })
     } catch (e) {
-        printError(e, e instanceof SyntaxError);
+        console.error('error parsing - '+s)
+        printError(e, e instanceof SyntaxError)
     }
 }
