@@ -66,7 +66,8 @@ case 'next':
             date_iso:next.toISOString()
         },
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            "Cache-Control" : "public, max-age=84600" //1 day
         }
     }
     context.done()
