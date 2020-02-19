@@ -44,7 +44,11 @@ module.exports = async function (context, req) {
             } while (onerow)
 
             context.res = {
-                body: results
+                body: results,
+                headers: {
+                    "Content-Type" : "application/json",
+                    "Cache-Control" : "public, max-age=84600" //1 day
+                }
             }
         }
     } else {
@@ -107,7 +111,7 @@ module.exports = async function (context, req) {
                         body: results,
                         headers: {
                             "Content-Type" : "application/json",
-                            "Cache-Control" : "public, max-age=84600"
+                            "Cache-Control" : "public, max-age=84600" //1 day
                         }
                     }
                 }
