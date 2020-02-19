@@ -10,40 +10,113 @@ const jsonendmarker = /<\/script>/
 const linkpattern = /https:\/\/www.shelterlistings.org\/details\/\d+\//
 const soft404page = "https://www.shelterlistings.org/nocity.html"
 
+const jsoncorrections = [
+    {find:/(\n|\r|\t)/g, fix:""},
+    {find:/646 \"a\" St/g, fix:"646 \\\"a\\\" St"}
+]
+
 //usage http://localhost:7071/HomelessShelters/{cityname} --data for one city
 //usage http://localhost:7071/HomelessShelters/{cityname}{?geocode=1}
 //usage http://localhost:7071/HomelessShelters/ --list of cities
+//usage http://localhost:7071/HomelessShelters/all --Full dataset geocoded (slow)
 
 module.exports = async function (context, req) {
     const cityname = context.req.params.cityname
 
-    if(!cityname) {
-        //List all cities
-        const response = await fetch(citiesurl)
+    if(!cityname) 
+        context.res = await list_cities()
+    else if(cityname==='all') {
+        context.res = await get_all()
+    } else 
+        context.res = await get_data_for_one_city(cityname,!!req.query.geocode)
+    
 
-        if (!response.ok)
-            context.res = {
-                status: response.status,
-                body: `Error getting data - ${await response.text()}`
+    context.done()
+}
+
+
+async function get_all() {
+    const allcities = await list_cities()
+
+    let results = []
+
+    for(let value of allcities.body) {
+        console.log('Loading '+value.name)
+        const onecity = await get_data_for_one_city(value.code,true)
+        if(onecity.status)
+            console.error(onecity.status)
+        else
+            onecity.body.forEach(x=>{
+                results.push(x)
+            })
+    }
+
+    return {
+        body: results,
+        headers: {
+            "Content-Type" : "application/json",
+            "Cache-Control" : "public, max-age=84600" //1 day
+        }
+    }
+}
+
+async function get_data_for_one_city(cityname,dogeocode) {
+    //Single city list
+    const response = await fetch(`${dataurl+cityname}-ca.html`)
+
+    if (!response.ok)
+        return {
+            status: response.status,
+            body: `Error getting data - ${await response.text()}`
+        }
+    else if(response.url.startsWith(soft404page))
+        return {
+            status: 404,
+            body: `Invalid city code - "${cityname}"`
+        }
+    else {
+        //looking for these markers...<script type="application/ld+json">
+        const html = (await response.text()).split(pagestartmarker,2)[1]
+
+        if(!html) 
+            return {
+                status: 404,
+                body: `No city data for "${cityname}"`
             }
         else {
-            const html = await response.text()
+            let results = []
 
-            const results = []
-            let onerow = []
-            do {
-                onerow = citiesmatch.exec(html)
-                if (onerow) 
-                    results.push(
-                        {
-                            //fullmatch : onerow[0],
-                            code : onerow[1],
-                            name : onerow[2],
-                        }
-                    )
-            } while (onerow)
+            for(let [i,value] of html.split(jsonstartmarker).entries())
+                if(i > 0) {
+                    const jsonsplit = value.split(jsonendmarker,2)
+                    const url = jsonsplit[1].match(linkpattern)[0]
+                    let cleanjson = jsonsplit[0]
 
-            context.res = {
+                    for(const regex of jsoncorrections)
+                        cleanjson = cleanjson.replace(regex.find,regex.fix)
+
+                    const x = JSONlogparse(cleanjson)
+                    const jsonrow = {
+                        "name" : x.name,
+                        "address" : x.address.streetAddress,
+                        "city" : x.address.addressLocality,
+                        "state" : x.address.addressRegion,
+                        "zipcode" : x.address.postalCode,
+                        "phone" : x.telephone,
+                        url,
+                        "description" : x.description
+                    }
+
+                    if(dogeocode) {
+                        const georesult = await geocode(`${jsonrow.address}, ${jsonrow.city}, ${jsonrow.state} ${jsonrow.zipcode}`)
+                        if(georesult)
+                            jsonrow['location'] = georesult
+                    }
+
+                    results.push(jsonrow)
+                }
+
+            return {
                 body: results,
                 headers: {
                     "Content-Type" : "application/json",
@@ -51,95 +124,59 @@ module.exports = async function (context, req) {
                 }
             }
         }
-    } else {
-        //Single city list
-        const response = await fetch(`${dataurl+cityname}-ca.html`)
-
-        if (!response.ok)
-            context.res = {
-                status: response.status,
-                body: `Error getting data - ${await response.text()}`
-            }
-        else if(response.url.startsWith(soft404page))
-            context.res = {
-                status: 404,
-                body: `Invalid city code - "${cityname}"`
-            }
-        else {
-            //looking for these markers...<script type="application/ld+json">
-            const html = (await response.text()).split(pagestartmarker,2)[1]
-
-            if(!html) 
-                context.res = {
-                    status: 404,
-                    body: `No city data for "${cityname}"`
-                }
-            else {
-                let results = []
-
-                for(let [i,value] of html.split(jsonstartmarker).entries())
-                    if(i > 0) {
-                        const jsonsplit = value.split(jsonendmarker,2)
-                        const url = jsonsplit[1].match(linkpattern)[0]
-
-                        const x = JSONlogparse(
-                            jsonsplit[0]
-                            .replace(/(\n|\r|\t)/g,'')
-                            )
-                        const jsonrow = {
-                            "name" : x.name,
-                            "address" : x.address.streetAddress,
-                            "city" : x.address.addressLocality,
-                            "state" : x.address.addressRegion,
-                            "zipcode" : x.address.postalCode,
-                            "phone" : x.telephone,
-                            url,
-                            "description" : x.description
-                        }
-
-                        if(req.query.geocode) {
-                            const georesult = await geocode(`${jsonrow.address}, ${jsonrow.city}, ${jsonrow.state} ${jsonrow.zipcode}`)
-                            if(georesult)
-                                jsonrow['location'] = georesult
-                        }
-
-                        results.push(jsonrow)
-                    }
-
-                context.res = 
-                    {
-                        body: results,
-                        headers: {
-                            "Content-Type" : "application/json",
-                            "Cache-Control" : "public, max-age=84600" //1 day
-                        }
-                    }
-                }
-
-        }
-
     }
-
-    context.done()
 }
 
+async function list_cities() {
+    //List all cities
+    const response = await fetch(citiesurl)
 
+    if (!response.ok)
+        return {
+            status: response.status,
+            body: `Error getting data - ${await response.text()}`
+        }
+    else {
+        const html = await response.text()
 
+        const results = []
+        let onerow = []
+        do {
+            onerow = citiesmatch.exec(html)
+            if (onerow) 
+                results.push(
+                    {
+                        //fullmatch : onerow[0],
+                        code : onerow[1],
+                        name : onerow[2],
+                    }
+                )
+        } while (onerow)
+
+        return {
+            body: results,
+            headers: {
+                "Content-Type" : "application/json",
+                "Cache-Control" : "public, max-age=84600" //1 day
+            }
+        }
+    }
+}
 
 
 async function geocode(query) {
-/*
-The following local.settings.json file is required for this to work...
-
-{
-    ...
-    "Values": {
+    /*
+    The following local.settings.json file is required for this to work...
+    
+    {
         ...
-        "FUNCTIONS_MAP_KEY": "(Insert "Azure Authentication Shared Key" here )"
+        "Values": {
+            ...
+            "FUNCTIONS_MAP_KEY": "(Insert "Azure Authentication Shared Key" here )"
+        }
     }
-}
-*/
-
+    */
+    
     const apikey = process.env["FUNCTIONS_MAP_KEY"]
 
     if(!apikey)
@@ -156,7 +193,7 @@ The following local.settings.json file is required for this to work...
             return {"lat": georesult.lat, "lon":georesult.lon}
     }
 }
-
+    
 function JSONlogparse(s) {
     const printError = function(error, explicit) {
         console.warn(`[${explicit ? 'EXPLICIT' : 'INEXPLICIT'}] ${error.name}: ${error.message}`);
@@ -164,9 +201,9 @@ function JSONlogparse(s) {
     
     try {
         return JSON.parse(s, (key, value) => {
-            //console.log(`${key} - ${value}`); // log the current property name, the last is "".
+            console.log(`${key} - ${value}`); // log the current property name, the last is "".
             return value     // return the unchanged property value.
-          })
+            })
     } catch (e) {
         printError(e, e instanceof SyntaxError);
     }
