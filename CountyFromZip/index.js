@@ -1,19 +1,23 @@
 const fs = require('fs');
-const zips = JSON.parse(fs.readFileSync('CaZipLookup/counties.json','utf8'));
+const zips = JSON.parse(fs.readFileSync('CountyFromZip/counties.json','utf8'));
 
 module.exports = async function (context, req) {
     const input = context.req.params.zip;
-
+    
     if (input) {
-        let cities = [];
-        for (const ziprow of zips) {
-            cities = ziprow[input];
-            if (cities) break;
-        }
+        let county;
+        
+        zips.forEach( (item) => {
+            if(input == item.zip) {
+                county = item;
+                console.log(county)
+            }
+        })
 
-        if (cities) 
+        if (county) 
             context.res = {
-                body: {"zip":input, "cities":cities.map(cityname => ({"name" : cityname} ))},
+                body: county,
+                
                 headers: {
                     'Content-Type' : 'application/json'
                 }
