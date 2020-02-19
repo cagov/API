@@ -22,7 +22,8 @@ case '.ics':
                 body: body,
                 headers: {
                     'Content-Disposition' : 'attachment; filename="California State Holidays.ics"',
-                    'Content-Type' : 'text/calendar'
+                    'Content-Type' : 'text/calendar',
+                    'Cache-Control' : 'public, max-age=84600' //1 day
                 }
             }
             context.res = res
@@ -67,7 +68,7 @@ case 'next':
         },
         headers: {
             'Content-Type' : 'application/json',
-            "Cache-Control" : "public, max-age=84600" //1 day
+            'Cache-Control' : 'public, max-age=84600' //1 day
         }
     }
     context.done()
