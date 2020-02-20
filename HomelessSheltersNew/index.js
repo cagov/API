@@ -1,15 +1,30 @@
 //use this https://www.npmjs.com/package/geolib
+const geolib = require('geolib')
+const fs = require('fs')
+const data = JSON.parse(fs.readFileSync('HomelessSheltersNew/Shelters.json','utf8')).filter(x=>x.location)
 
 module.exports = async function (context, req) {
     const query = req.query.q
     const radius = Number(req.query.r) || 10
 
     if (query) {
-        const georesult = await geocode(query)
+        const point = await geocode(query)
+
+        const coords = data
+            .map((x,i) => {
+                return {
+                    i,
+                    latitude:x.location.lat,
+                    longitude:x.location.lon 
+                }
+            })
+        
+        const points = geolib.orderByDistance( point , coords)
+
 
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: `q=${query}, r=${radius}, result=${JSON.stringify(georesult)}`
+            body: `q=${query}, r=${radius}, result=${JSON.stringify(point)}, points=${JSON.stringify(points)}`
         }
     }
     else {
@@ -47,6 +62,6 @@ async function geocode(query) {
         const geojson = await georesponse.json()
         const georesult =  geojson.summary.numResults>0 ? geojson.results[0].position : null
         if(georesult)
-            return {"lat": georesult.lat, "lon":georesult.lon}
+            return {latitude: georesult.lat, longitude:georesult.lon}
     }
 }
