@@ -1,10 +1,11 @@
 {
   "bindings": [
     {
-      "authLevel": "anonymous",
+      "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
+      "route": "HomelessSheltersScraper/{cityname?}",
       "methods": [ "get" ]
     },
     {
