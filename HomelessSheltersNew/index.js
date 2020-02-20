@@ -5,7 +5,7 @@ const data = JSON.parse(fs.readFileSync('HomelessSheltersNew/Shelters.json','utf
 
 module.exports = async function (context, req) {
     const query = req.query.q
-    const radius = Number(req.query.r) || 10
+    //const radius = Number(req.query.r) || 10
 
     if (query) {
         const point = await geocode(query)
@@ -19,12 +19,32 @@ module.exports = async function (context, req) {
                 }
             })
         
-        const points = geolib.orderByDistance( point , coords)
+        const results = geolib
+            .orderByDistance(point, coords)
+            .slice(0,10)
+            .map(x=>data[x.i])
 
+        results.forEach(x=> 
+            x.location["distance"] =
+                round(
+                    geolib.convertDistance(
+                        geolib.getDistance(
+                            {
+                                latitude:x.location.lat,
+                                longitude:x.location.lon
+                            }
+                        , point)
+                    ,'mi')
+                ,2)
+        )
 
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: `q=${query}, r=${radius}, result=${JSON.stringify(point)}, points=${JSON.stringify(points)}`
+            body: results,
+            headers: {
+                'Content-Type' : 'application/json',
+                "Cache-Control" : "public, max-age=84600" //1 day
+            }
         }
     }
     else {
@@ -65,3 +85,7 @@ async function geocode(query) {
             return {latitude: georesult.lat, longitude:georesult.lon}
     }
 }
+
+function round(value, decimals) {
+    return Number(Math.round(value+'e'+decimals)+'e-'+decimals)
+  }
