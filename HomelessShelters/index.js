@@ -26,7 +26,12 @@ module.exports = async function (context, req) {
     if(!cityname) 
         context.res = await list_cities()
     else if(cityname==='all') {
-        context.res = await get_all()
+        context.res = {
+            status: 404,
+            body: 'Service offline for now'
+        }
+
+        //context.res = await get_all()
     } else 
         context.res = await get_data_for_one_city(cityname,!!req.query.geocode)
     
@@ -55,6 +60,7 @@ async function get_all() {
         body: results,
         headers: {
             "Content-Type" : "application/json",
+            'Content-Disposition' : 'attachment; filename="Shelters.json"',
             "Cache-Control" : "public, max-age=84600" //1 day
         }
     }

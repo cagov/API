@@ -19,7 +19,8 @@ module.exports = async function (context, req) {
                 body: county,
                 
                 headers: {
-                    'Content-Type' : 'application/json'
+                    'Content-Type' : 'application/json',
+                    "Cache-Control" : "public, max-age=84600" //1 day
                 }
             };
         else 
