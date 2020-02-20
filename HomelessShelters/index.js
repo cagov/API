@@ -85,7 +85,7 @@ async function geocode(query) {
     if (georesponse.ok) {
         const geojson = await georesponse.json()
         const georesult =  geojson.summary.numResults>0 ? geojson.results[0] : null
-        if(georesult)
+        if(georesult && georesult.address.countrySubdivision=="CA")
             return {latitude: georesult.position.lat, longitude:georesult.position.lon, match: georesult.address.freeformAddress}
     }
 }
