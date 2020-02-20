@@ -1,3 +1,5 @@
+//use this https://www.npmjs.com/package/geolib
+
 module.exports = async function (context, req) {
     const query = req.query.q
     const radius = Number(req.query.r) || 10
