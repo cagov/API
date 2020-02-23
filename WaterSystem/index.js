@@ -11,9 +11,9 @@ allSystems.forEach( (system) => {
 })
 
 module.exports = async function (context, req) {
+  let respBody= [];
   if (req.query.lat || (req.body && req.body.lon)) {
     // we have a point, find the corresponding systems
-    let respBody= [];
     let uniqueFoundSystems = new Map();
 
     let midPoint = 37.046741;
@@ -60,9 +60,27 @@ module.exports = async function (context, req) {
       body: JSON.stringify(respBody)
     };
   } else {
-    context.res = {
-      status: 400,
-      body: "Please pass a lat and lon on the query string"
-    };
+    if(req.query.systemId) {
+      let system = {
+        type: "Feature",
+        properties: {}
+      }
+      system.properties.systemData = systemMap.get(req.query.systemId);
+      system.properties.pwsid = system.properties.systemData['Water System No'];
+      system.properties.name = system.properties.systemData['Water System Name'];
+      respBody.push(system)
+      
+      context.res = {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(respBody)
+      };  
+    } else {
+      context.res = {
+        status: 400,
+        body: "Please pass a lat and lon on the query string"
+      };  
+    }
   }
 };
