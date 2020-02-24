@@ -10,7 +10,7 @@ module.exports = function (context, req) {
     //context.log('JavaScript HTTP trigger function processed a request.');
     //context.log('Query = ' + JSON.stringify(req.query));
 
-switch ((context.req.params.route || "").toLowerCase()) {
+switch ((req.params.route || "").toLowerCase()) {
 case '.ics':
     const https = require('https')
     https.get(icalUrl, response => {
@@ -31,7 +31,6 @@ case '.ics':
                     'Cache-Control' : 'public, max-age=84600' //1 day
                 }
             }
-            context.done()
         })
     })
     break
@@ -74,14 +73,26 @@ case 'next':
             'Cache-Control' : 'public, max-age=84600' //1 day
         }
     }
-    context.done()
+    break
+case 'all':
+    context.res = {
+        body:
+            holidaydates.map(x=>({"name":x.name,"date":x.dateobject}))
+        ,
+        headers: {
+            'Content-Type' : 'application/json',
+            'Cache-Control' : 'public, max-age=84600' //1 day
+        }
+    }
     break
 default:
     context.res = {
         status: 404,
-        body: "Nothing to do (try '/next' or '/.ics')"
+        body: "Nothing to do (try '/next' or '/.ics' or '/all')"
     }
-    context.done()
+    break
 }
+
+context.done()
 
 }
