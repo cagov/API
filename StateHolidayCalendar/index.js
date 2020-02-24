@@ -1,3 +1,8 @@
+const fs = require('fs')
+const holidaydates = JSON.parse(fs.readFileSync('StateHolidayCalendar/holidaydates.json','utf8'))
+holidaydates.forEach(x => x["dateobject"]=new Date(x.date+"T00:00:00-08:00"))
+holidaydates.sort((a,b) => a.dateobject-b.dateobject)
+
 module.exports = function (context, req) {
     const icalUrl = 'https://calendar.google.com/calendar/ical/alpha.ca.gov_m9372uj21m6qdgrqg4olkdgo4c%40group.calendar.google.com/public/basic.ics'
 
@@ -10,25 +15,22 @@ case '.ics':
     const https = require('https')
     https.get(icalUrl, response => {
 
-        var body = ''
-        var i = 0
+        let body = ''
+        let i = 0
         response.on('data', function (chunk) {
-            i++;
-            body += chunk;
+            i++
+            body += chunk
         })
         response.on('end', function () {
-            res = { 
+            context.res = { 
                 isRaw: 'true', 
-                body: body,
+                body,
                 headers: {
                     'Content-Disposition' : 'attachment; filename="California State Holidays.ics"',
                     'Content-Type' : 'text/calendar',
                     'Cache-Control' : 'public, max-age=84600' //1 day
                 }
             }
-            context.res = res
-
-            //console.log('Finished')
             context.done()
         })
     })
@@ -36,11 +38,12 @@ case '.ics':
 case 'next':
 //Date docs here...
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
-
-    const next = new Date("2020-03-31T00:00:00-08:00"); //offset 8 hours to UTC to get it to pacific
+    const server_now = new Date()
+    const nextrow = holidaydates.filter(x=>x.dateobject>server_now)[0]
+    const next = nextrow.dateobject
+    const name = nextrow.name
     const locales = 'en-US'
 
-    //const next = new Date("2020-01-01T-8:00")
     const month_name = next.toLocaleDateString(locales, { month: 'long' })
     const month = parseInt(next.toLocaleDateString(locales, { month: 'numeric' }))
     const day_of_month = parseInt(next.toLocaleDateString(locales, { day: 'numeric' }))
@@ -48,23 +51,23 @@ case 'next':
     const date = next.toLocaleDateString(locales, { 
         year: 'numeric', month: 'numeric', day: 'numeric'
      })
-    const time_zone = next.toLocaleDateString(locales, { timeZoneName: 'long' })
+    const server_time_zone = server_now.toLocaleDateString(locales, { timeZoneName: 'long' })
     const date_full = next.toLocaleDateString(locales, { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     })
-    const name = "Cesar Chavez Day"
 
     context.res = {
         body: {
             date,
+            date_iso:next.toISOString(),
             name,
             date_full,
             day_of_week,
             month_name,month, 
             day_of_month,
             year:next.getUTCFullYear(),
-            time_zone,
-            date_iso:next.toISOString()
+            server_time_zone,
+            server_now
         },
         headers: {
             'Content-Type' : 'application/json',
@@ -76,7 +79,7 @@ case 'next':
 default:
     context.res = {
         status: 404,
-        body: "Nothing to do"
+        body: "Nothing to do (try '/next' or '/.ics')"
     }
     context.done()
 }
