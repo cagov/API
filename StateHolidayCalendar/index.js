@@ -1,5 +1,6 @@
 const fs = require('fs')
 const holidaydates = JSON.parse(fs.readFileSync('StateHolidayCalendar/holidaydates.json','utf8'))
+const holidaylang = JSON.parse(fs.readFileSync('StateHolidayCalendar/holidaylang.json','utf8'))
 holidaydates.forEach(x => x["dateobject"]=new Date(x.date+"T00:00:00-08:00"))
 holidaydates.sort((a,b) => a.dateobject-b.dateobject)
 
@@ -10,6 +11,10 @@ module.exports = function (context, req) {
     //context.log('JavaScript HTTP trigger function processed a request.');
     //context.log('Query = ' + JSON.stringify(req.query));
 
+const lang = req.query.lang
+
+const translate=text=>lang?holidaylang.find(x=>x.en===text)[lang]||text:text
+ 
 switch ((req.params.route || "").toLowerCase()) {
 case '.ics':
     const https = require('https')
@@ -40,7 +45,7 @@ case 'next':
     const server_now = new Date()
     const nextrow = holidaydates.filter(x=>x.dateobject>server_now)[0]
     const next = nextrow.dateobject
-    const name = nextrow.name
+    const name = translate(nextrow.name)
     const locales = 'en-US'
 
     const month_name = next.toLocaleDateString(locales, { month: 'long' })
@@ -77,7 +82,7 @@ case 'next':
 case 'all':
     context.res = {
         body:
-            holidaydates.map(x=>({"name":x.name,"date":x.dateobject}))
+            holidaydates.map(x=>({"name":translate(x.name),"date":x.dateobject}))
         ,
         headers: {
             'Content-Type' : 'application/json',
@@ -96,3 +101,5 @@ default:
 context.done()
 
 }
+
+
