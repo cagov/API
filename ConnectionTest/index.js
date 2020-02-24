@@ -4,12 +4,17 @@ module.exports = async function (context, req) {
    
 //Leave this as is for a template to use for new services
 
-const now = new Date()
+const now = new Date().toLocaleString('en-US', {
+    //timeZoneName: 'short'
 
-data.push({"date":now.toLocaleTimeString(), "ip":req.headers['x-forwarded-for']})
+    timeZone: "America/Los_Angeles"
+    //timeZone: 'Pacific Standard Time'
+  });
+
+data.push({"date":now, "ip":req.headers['x-forwarded-for']})
 
         context.res = {
-            body: "Connection Success! - " + JSON.stringify(data)
+            body: "Connection Success! - \n\n" + JSON.stringify(data,null, '  ')
         };
 
 };

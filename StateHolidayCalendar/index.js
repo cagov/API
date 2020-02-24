@@ -1,7 +1,7 @@
 const fs = require('fs')
 const holidaydates = JSON.parse(fs.readFileSync('StateHolidayCalendar/holidaydates.json','utf8'))
 const holidaylang = JSON.parse(fs.readFileSync('StateHolidayCalendar/holidaylang.json','utf8'))
-holidaydates.forEach(x => x["dateobject"]=new Date(x.date+"T00:00:00-08:00"))
+holidaydates.forEach(x => x["dateobject"]=new Date(x.date+" PST"))
 holidaydates.sort((a,b) => a.dateobject-b.dateobject)
 
 module.exports = function (context, req) {
