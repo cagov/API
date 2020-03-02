@@ -7,7 +7,10 @@ module.exports = async function (context, req) {
     //const radius = Number(req.query.r) || 10
 
     if (query) {
-        const point = await geocode(query)
+        let point = await geocode(query)
+
+        if(!point) //try again with CA
+            point = await geocode(query+', California, United States')
 
         if(point) {
             const coords = data
