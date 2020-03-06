@@ -12,16 +12,26 @@ allSystems.forEach( (system) => {
 
 module.exports = async function (context, req) {
   let respBody= [];
-  if (req.query.lat || (req.body && req.body.lon)) {
+  let latitude, longitude;
+  if(req.query.lat) {
+    latitude = req.query.lat;
+    longitude = req.query.lon;
+  }
+  if (req.query.stringLoc) {
+    let point = await geocode(req.query.stringLoc)
+    latitude = point.latitude;
+    longitude = point.longitude;
+  }
+  if(latitude) {
     // we have a point, find the corresponding systems
     let uniqueFoundSystems = new Map();
 
     let midPoint = 37.046741;
     let leftOfSac = -121.868589;
     let systemGeoJson = bottomSystems;
-    if(req.query.lat >= midPoint) {
+    if(latitude >= midPoint) {
       // systemGeoJson = topSystems;
-      if(req.query.lon >= leftOfSac) {
+      if(longitude >= leftOfSac) {
         systemGeoJson = topLeftSystems;
       } else {
         systemGeoJson = topRightSystems;
@@ -39,7 +49,7 @@ module.exports = async function (context, req) {
               obj.longitude = shape[0];
               refinedGeometry.push(obj);  
             })
-            inPolygon = geolib.isPointInPolygon({ latitude: parseFloat(req.query.lat), longitude: parseFloat(req.query.lon) }, refinedGeometry);
+            inPolygon = geolib.isPointInPolygon({ latitude: parseFloat(latitude), longitude: parseFloat(longitude) }, refinedGeometry);
             if(inPolygon) {
               uniqueFoundSystems.set(system.properties.pwsid,system)
             }
@@ -60,6 +70,7 @@ module.exports = async function (context, req) {
       body: JSON.stringify(respBody)
     };
   } else {
+    console.log('not trying to find')
     if(req.query.systemId) {
       let system = {
         type: "Feature",
@@ -84,3 +95,34 @@ module.exports = async function (context, req) {
     }
   }
 };
+
+
+async function geocode(query) {
+  /*
+  The following local.settings.json file is required for this to work...
+  
+  {
+      ...
+      "Values": {
+          ...
+          "FUNCTIONS_MAP_KEY": "(Insert "Azure Authentication Shared Key" here )"
+      }
+  }
+  */
+  
+  const apikey = process.env["FUNCTIONS_MAP_KEY"]
+
+  if(!apikey)
+      throw Error("Api key (FUNCTIONS_MAP_KEY) is missing from configuration.  See source comment for help.")
+
+  const geolink = `https://atlas.microsoft.com/search/address/json?subscription-key=${apikey}&api-version=1.0&limit=1&countrySet=US&extendedPostalCodesFor=None&topLeft=42,-124.5&btmRight=32.5,-114.1&query=`
+// Getcoder docs - https://docs.microsoft.com/en-us/rest/api/maps/search/getsearchaddress
+
+  const georesponse =  await fetch(geolink+encodeURIComponent(query))
+  if (georesponse.ok) {
+      const geojson = await georesponse.json()
+      const georesult =  geojson.summary.numResults>0 ? geojson.results[0] : null
+      if(georesult && georesult.address.countrySubdivision=="CA")
+          return {latitude: georesult.position.lat, longitude:georesult.position.lon, match: georesult.address.freeformAddress}
+  }
+}
