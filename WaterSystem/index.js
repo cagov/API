@@ -70,7 +70,6 @@ module.exports = async function (context, req) {
       body: JSON.stringify(respBody)
     };
   } else {
-    console.log('not trying to find')
     if(req.query.systemId) {
       let system = {
         type: "Feature",
