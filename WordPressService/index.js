@@ -67,39 +67,62 @@ module.exports = async function (context, req) {
         });
 
         //Updates
-        for(const targetfile of targetfiles) {
-            const sourcefile = sourcefiles.find(y=>targetfile.filename===y.filename);
-            //const targetcontent = await fetch(`https://raw.githubusercontent.com/cagov/covid19/master/${targetfile.path}`,authoptions());
-            const targetcontent = await fetch(`https://api.github.com/repos/cagov/covid19/git/blobs/${targetfile.sha}`,authoptions())
-                .then((response) => {
-                    return response.json();
-                });
-
+        for(const sourcefile of sourcefiles) {
+            const targetfile = targetfiles.find(y=>sourcefile.filename===y.filename);
             const base64 = Base64.encode(sourcefile.content.rendered);
-            
-            if(base64!==targetcontent.content.trim()) {
-                //Update file
+
+            if(!targetfile) {
+                //ADD
                 const options = {
                     method: 'PUT',
                     headers: authheader(),
                     body: JSON.stringify({
-                        "message": `Update ${targetfile.path}`,
+                        "message": `ADD ${sourcefile.filename}`,
                         "committer": committer,
                         "branch": "master",
-                        "sha": targetfile.sha,
                         "content": base64
                     })
                 };
     
-                fetch(`https://api.github.com/repos/cagov/covid19/contents/${targetfile.path}`, options)
+                fetch(`https://api.github.com/repos/cagov/covid19/contents/pages/${sourcefile.filename}.html`, options)
                 .then((result) => {
-                    console.log('UPDATE Success:', result);
-                  })
+                    console.log('ADD Success:', result);
+                })
                 .catch((error) => {
-                    console.error('UPDATE Error:', error);
-                  });
-            }
-        }       
+                    console.error('ADD Error:', error);
+                });
+                
+            } else {
+                //UPDATE
+                const targetcontent = await fetch(`https://api.github.com/repos/cagov/covid19/git/blobs/${targetfile.sha}`,authoptions())
+                    .then((response) => {
+                        return response.json();
+                    });
+                
+                if(base64!==targetcontent.content.trim()) {
+                    //Update file
+                    const options = {
+                        method: 'PUT',
+                        headers: authheader(),
+                        body: JSON.stringify({
+                            "message": `Update ${targetfile.path}`,
+                            "committer": committer,
+                            "branch": "master",
+                            "sha": targetfile.sha,
+                            "content": base64
+                        })
+                    };
+        
+                    fetch(`https://api.github.com/repos/cagov/covid19/contents/${targetfile.path}`, options)
+                    .then((result) => {
+                        console.log('UPDATE Success:', result);
+                    })
+                    .catch((error) => {
+                        console.error('UPDATE Error:', error);
+                    });
+                }
+            }       
+        }
 
         context.res = {
             // status: 200, /* Defaults to 200 */
