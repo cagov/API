@@ -7,119 +7,118 @@ const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
 const githubBranch = 'synctest'
 const githubSyncFolder = 'pages/synctest'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
+const defaultTags = ['covid19'];
+
+//attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
 module.exports = async function (context, req) {
+    const sourcefiles = await fetch(wordPressApiUrl,authoptions())
+        .then(response => response.ok ? response.json() : Promise.reject(response))
+        .catch(error => {
+            console.error('FETCH Wordpress Error:', error);
+            return Promise.reject();
+        });
 
-    //Any POST will be considered the ping
+    sourcefiles.forEach(sourcefile => {
+        sourcefile['filename'] = sourcefile.slug;
+
+        sourcefile['html'] = `---\nlayout: page.njk\ntitle: Coronavirus COVID-19 Resoponse Portal\nmeta: some stuff\nauthor: State of California\npublishdate: ${defaultTags.join(',')}\n---\n`
+            +sourcefile.content.rendered;
+    });
+
+    const targetfiles = (await fetch(`${githubApiUrl}contents/${githubSyncFolder}?ref=${githubBranch}`,authoptions())
+        .then(response => response.ok ? response.json() : Promise.reject(response))
+        .catch(error => {
+            console.error('FETCH Github Error:', error);
+            return Promise.reject();
+        })
+        )
+        .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html'); 
+
+    targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
     
-    if(req.method==='GET') {
-        context.res = {
-            body: 'This service only responds to a POST'
-        };
-    } else {
-        const sourcefiles = await fetch(wordPressApiUrl,authoptions())
-            .then(response => response.ok ? response.json() : Promise.reject(response))
-            .catch(error => {
-                console.error('FETCH Wordpress Error:', error);
-                return Promise.reject();
-            });
-
-        sourcefiles.forEach(x=>x['filename']=x.slug);
-
-        const targetfiles = (await fetch(`${githubApiUrl}contents/${githubSyncFolder}?ref=${githubBranch}`,authoptions())
-            .then(response => response.ok ? response.json() : Promise.reject(response))
-            .catch(error => {
-                console.error('FETCH Github Error:', error);
-                return Promise.reject();
-            })
-            )
-            .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html'); 
-
-        targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
-        
-        //Files to delete
-        for(const deleteTarget of targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename))) {
-            const options = {
-                method: 'DELETE',
-                headers: authheader(),
-                body: JSON.stringify({
-                    "message": `Delete ${deleteTarget.path}`,
-                    "committer": committer,
-                    "branch": githubBranch,
-                    "sha": deleteTarget.sha
-                })
-            };
-
-            await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
-            .then(() => {
-                console.log(`DELETE Success: ${deleteTarget.path}`);
-            })
-            .catch(error => {
-                console.error('DELETE Error:', error);
-            }); 
-        }
-
-        //Updates
-        for(const sourcefile of sourcefiles) {
-            const targetfile = targetfiles.find(y=>sourcefile.filename===y.filename);
-            const base64 = Base64.encode(sourcefile.content.rendered);
-
-            const getOptions = bodyJSON =>
-                ({
-                    method: 'PUT',
-                    headers: authheader(),
-                    body: JSON.stringify(bodyJSON)
-                });
-            
-            let body = {
-                "message": "",
+    //Files to delete
+    for(const deleteTarget of targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename))) {
+        const options = {
+            method: 'DELETE',
+            headers: authheader(),
+            body: JSON.stringify({
+                "message": `Delete ${deleteTarget.path}`,
                 "committer": committer,
                 "branch": githubBranch,
-                "content": base64
-            };
+                "sha": deleteTarget.sha
+            })
+        };
 
-            if(!targetfile) {
-                //ADD
-                body.message=`ADD ${sourcefile.filename}`;
+        await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
+        .then(() => {
+            console.log(`DELETE Success: ${deleteTarget.path}`);
+        })
+        .catch(error => {
+            console.error('DELETE Error:', error);
+        }); 
+    }
+
+    //Updates
+    for(const sourcefile of sourcefiles) {
+        const targetfile = targetfiles.find(y=>sourcefile.filename===y.filename);
+        const base64 = Base64.encode(sourcefile.html);
+
+        const getOptions = bodyJSON =>
+            ({
+                method: 'PUT',
+                headers: authheader(),
+                body: JSON.stringify(bodyJSON)
+            });
+        
+        let body = {
+            "message": "",
+            "committer": committer,
+            "branch": githubBranch,
+            "content": base64
+        };
+
+        if(!targetfile) {
+            //ADD
+            body.message=`ADD ${sourcefile.filename}`;
+
+            await fetch(`${githubApiUrl}contents/${githubSyncFolder}/${sourcefile.filename}.html`, getOptions(body))
+            .then(() => {
+                console.log(`ADD Success: ${sourcefile.filename}`);
+            })
+            .catch(error => {
+                console.error('ADD Error:', error);
+            });
+            
+        } else {
+            //UPDATE
+            const targetcontent = await fetch(`${githubApiUrl}git/blobs/${targetfile.sha}`,authoptions())
+                .then(response => response.json())
+                .catch(error => {
+                    console.error('FETCH Blob Error:', error);
+                });
+            
+            if(base64!==targetcontent.content.replace(/\n/g,'')) {
+                //Update file
+                body.message=`Update ${targetfile.path}`;
+                body['sha']=targetfile.sha;
     
-                await fetch(`${githubApiUrl}contents/${githubSyncFolder}/${sourcefile.filename}.html`, getOptions(body))
+                await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
                 .then(() => {
-                    console.log(`ADD Success: ${sourcefile.filename}`);
+                    console.log(`UPDATE Success: ${targetfile.path}`);
                 })
                 .catch(error => {
-                    console.error('ADD Error:', error);
+                    console.error('UPDATE Error:', error);
                 });
-                
             } else {
-                //UPDATE
-                const targetcontent = await fetch(`${githubApiUrl}git/blobs/${targetfile.sha}`,authoptions())
-                    .then(response => response.json())
-                    .catch(error => {
-                        console.error('FETCH Blob Error:', error);
-                    });
-                
-                if(base64!==targetcontent.content.replace(/\n/g,'')) {
-                    //Update file
-                    body.message=`Update ${targetfile.path}`;
-                    body['sha']=targetfile.sha;
-        
-                    await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
-                    .then(() => {
-                        console.log(`UPDATE Success: ${targetfile.path}`);
-                    })
-                    .catch(error => {
-                        console.error('UPDATE Error:', error);
-                    });
-                } else {
-                    console.log(`Files matched: ${targetfile.path}`)
-                }
-            }       
-        }
-
-        context.res = {
-            body: 'SYNC Complete'
-        };
+                console.log(`Files matched: ${targetfile.path}`)
+            }
+        }       
     }
+
+    context.res = {
+        body: 'SYNC Complete'
+    };
 
     context.done();
 }
