@@ -9,7 +9,6 @@ const githubSyncFolder = 'pages'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 const defaultTags = ['covid19'];
 const ignoreFiles = ['index.html','translate.html'];
-const rootTitle = 'Coronavirus COVID-19 Response';
 
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
@@ -25,11 +24,9 @@ module.exports = async function (context, req) {
         sourcefile['filename'] = sourcefile.slug;
 
         const pagetitle = sourcefile.title.rendered;
-        const htmltitle = (pagetitle!==rootTitle ? `${pagetitle} - ` : '') + rootTitle;
         const meta = sourcefile.excerpt.rendered.replace(/<p>/,'').replace(/<\/p>/,'').replace(/\n/,'').trim();
 
-        sourcefile['html'] = `---\nlayout: "page.njk"\ntitle: "${htmltitle}"\nmeta: "${meta}"\nauthor: "State of California"\npublishdate: "${sourcefile.modified_gmt}"\ntags: "${defaultTags.join(',')}"\n---\n`
-            +`<h1>${pagetitle}</h1>`
+        sourcefile['html'] = `---\nlayout: "page.njk"\ntitle: "${pagetitle}"\nmeta: "${meta}"\nauthor: "State of California"\npublishdate: "${sourcefile.modified_gmt}"\ntags: "${defaultTags.join(',')}"\n---\n`
             +sourcefile.content.rendered;
     });
 
