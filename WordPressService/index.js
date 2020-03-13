@@ -22,7 +22,7 @@ module.exports = async function (context, req) {
     sourcefiles.forEach(sourcefile => {
         sourcefile['filename'] = sourcefile.slug;
 
-        sourcefile['html'] = `---\nlayout: page.njk\ntitle: Coronavirus COVID-19 Resoponse Portal\nmeta: some stuff\nauthor: State of California\npublishdate: ${defaultTags.join(',')}\n---\n`
+        sourcefile['html'] = `---\nlayout: page.njk\ntitle: Coronavirus COVID-19 Resoponse Portal\nmeta: some stuff\nauthor: State of California\npublishdate: ${sourcefile.modified_gmt}\ntags: ${defaultTags.join(',')}\n---\n`
             +sourcefile.content.rendered;
     });
 
