@@ -4,7 +4,7 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
-const githubSyncFolder = 'pages/synctest3'; //no slash at the end
+const githubSyncFolder = 'pages/synctest4'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 
 module.exports = async function (context, req) {
@@ -14,25 +14,23 @@ module.exports = async function (context, req) {
     if(false) {
 
     } else {
-        let sourcefiles = await fetch(wordPressApiUrl,authoptions())
-            .then(response => response.json())
+        const sourcefiles = await fetch(wordPressApiUrl,authoptions())
+            .then(response => response.ok ? response.json() : Promise.reject(response))
             .catch(error => {
                 console.error('FETCH Wordpress Error:', error);
-                return;
+                return Promise.reject();
             });
 
         sourcefiles.forEach(x=>x['filename']=x.slug);
 
-        const targetfilesresponse = await fetch(`${githubApiUrl}contents/${githubSyncFolder}`,authoptions())
+        const targetfiles = (await fetch(`${githubApiUrl}contents/${githubSyncFolder}`,authoptions())
+            .then(response => response.ok ? response.json() : Promise.reject(response))
             .catch(error => {
                 console.error('FETCH Github Error:', error);
-                return;
-            }); 
-        
-        const targetfiles = targetfilesresponse.ok
-            ? (await targetfilesresponse.json())
-                .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html')
-            : [];
+                return Promise.reject();
+            })
+            )
+            .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html'); 
 
         targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
         
