@@ -4,15 +4,17 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
-const githubSyncFolder = 'pages/synctest4'; //no slash at the end
+const githubSyncFolder = 'pages/synctest'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 
 module.exports = async function (context, req) {
 
     //Any POST will be considered the ping
     
-    if(false) {
-
+    if(req.method==='GET') {
+        context.res = {
+            body: 'This service only responds to a POST'
+        };
     } else {
         const sourcefiles = await fetch(wordPressApiUrl,authoptions())
             .then(response => response.ok ? response.json() : Promise.reject(response))
@@ -114,15 +116,8 @@ module.exports = async function (context, req) {
         }
 
         context.res = {
-            // status: 200, /* Defaults to 200 */
-            body: {targetfiles, sourcefiles},
-            headers: {
-                
-                'Content-Type' : 'application/json'
-                //"Cache-Control" : "public, max-age=84600" //1 day
-            }
+            body: 'SYNC Complete'
         };
-        
     }
 
     context.done();
