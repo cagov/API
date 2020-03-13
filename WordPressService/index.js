@@ -24,6 +24,7 @@ module.exports = async function (context, req) {
         sourcefile['filename'] = sourcefile.slug;
 
         sourcefile['html'] = `---\nlayout: page.njk\ntitle: Coronavirus COVID-19 Resoponse Portal\nmeta: some stuff\nauthor: State of California\npublishdate: ${sourcefile.modified_gmt}\ntags: ${defaultTags.join(',')}\n---\n`
+            +`<h1>${sourcefile.title.rendered}</h1>`
             +sourcefile.content.rendered;
     });
 
