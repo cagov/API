@@ -4,6 +4,7 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
+const githubBranch = 'synctest'
 const githubSyncFolder = 'pages/synctest'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 
@@ -25,7 +26,7 @@ module.exports = async function (context, req) {
 
         sourcefiles.forEach(x=>x['filename']=x.slug);
 
-        const targetfiles = (await fetch(`${githubApiUrl}contents/${githubSyncFolder}`,authoptions())
+        const targetfiles = (await fetch(`${githubApiUrl}contents/${githubSyncFolder}?ref=${githubBranch}`,authoptions())
             .then(response => response.ok ? response.json() : Promise.reject(response))
             .catch(error => {
                 console.error('FETCH Github Error:', error);
@@ -44,7 +45,7 @@ module.exports = async function (context, req) {
                 body: JSON.stringify({
                     "message": `Delete ${deleteTarget.path}`,
                     "committer": committer,
-                    "branch": "master",
+                    "branch": githubBranch,
                     "sha": deleteTarget.sha
                 })
             };
@@ -73,7 +74,7 @@ module.exports = async function (context, req) {
             let body = {
                 "message": "",
                 "committer": committer,
-                "branch": "master",
+                "branch": githubBranch,
                 "content": base64
             };
 
