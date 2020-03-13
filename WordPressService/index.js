@@ -37,7 +37,7 @@ module.exports = async function (context, req) {
         targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
         
         //Files to delete
-        for(const deleteTarget in targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename))) {
+        for(const deleteTarget of targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename))) {
             const options = {
                 method: 'DELETE',
                 headers: authheader(),
@@ -51,7 +51,7 @@ module.exports = async function (context, req) {
 
             await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
             .then(() => {
-                console.log(`DELETE Success: ${deleteTarget}`);
+                console.log(`DELETE Success: ${deleteTarget.path}`);
             })
             .catch(error => {
                 console.error('DELETE Error:', error);
