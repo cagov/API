@@ -4,8 +4,8 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
-const githubBranch = 'synctest'
-const githubSyncFolder = 'pages/synctest'; //no slash at the end
+const githubBranch = 'staging'
+const githubSyncFolder = 'pages'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 const defaultTags = ['covid19'];
 const ignoreFiles = ['index.html','translate.html'];
