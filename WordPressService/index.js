@@ -1,125 +1,116 @@
-var pingdata = []
-
 const committer = {
-    "name": "Carter Medlin using Postman",
-    "email" : "carter.medlin@alpha.ca.gov"
-}
+    "name": "WordPressService",
+    "email" : "data@alpha.ca.gov"
+};
+
+const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
+const githubSyncFolder = 'pages/synctest3'; //no slash at the end
+const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 
 module.exports = async function (context, req) {
-    //ontext.log('JavaScript HTTP trigger function processed a request.');
 
-    const ping = req.query.ping;
-    const pingcheck = req.query.pingcheck;
-    const datainfo = req.query.datainfo;
+    //Any POST will be considered the ping
     
-    if(pingcheck) {
-        context.res = {
-            // status: 200, /* Defaults to 200 */
-            body: {pingdata : pingdata}
-        };
-    } else if (ping) {
+    if(false) {
 
-        pingdata.push({query : req.query, body : req.body})
+    } else {
+        let sourcefiles = await fetch(wordPressApiUrl,authoptions())
+            .then(response => response.json())
+            .catch(error => {
+                console.error('FETCH Wordpress Error:', error);
+                return;
+            });
 
-        context.res = {
-            // status: 200, /* Defaults to 200 */
-            body: "Ping"
-        };
-    } else if (datainfo) {
-        //Set by step commit
-//https://www.levibotelho.com/development/commit-a-file-with-the-github-api/
+        sourcefiles.forEach(x=>x['filename']=x.slug);
 
-//https://api.github.com/repos/cagov/covid19/contents/pages/
+        const targetfilesresponse = await fetch(`${githubApiUrl}contents/${githubSyncFolder}`,authoptions())
+            .catch(error => {
+                console.error('FETCH Github Error:', error);
+                return;
+            }); 
+        
+        const targetfiles = targetfilesresponse.ok
+            ? (await targetfilesresponse.json())
+                .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html')
+            : [];
 
-        let sourcefiles = (await fetch(`https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts`,authoptions())
-            .then(response => response.json()))
-        sourcefiles.forEach(x=>x['filename']=x.slug)
-
-       
-
-
-        let targetfiles = (await fetch(`https://api.github.com/repos/cagov/covid19/contents/pages/`,authoptions())
-            .then(response => response.json()))
-            .filter(x=>x.type==="file"&&x.name!=="index.html");
-
-        targetfiles.forEach(x=>x['filename']=x.name.split('.')[0])
+        targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
         
         //Files to delete
-        targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename)).forEach(x=>{
+        for(const deleteTarget in targetfiles.filter(x=>!sourcefiles.find(y=>x.filename===y.filename))) {
             const options = {
                 method: 'DELETE',
                 headers: authheader(),
                 body: JSON.stringify({
-                    "message": `Delete ${x.path}`,
+                    "message": `Delete ${deleteTarget.path}`,
                     "committer": committer,
                     "branch": "master",
-                    "sha": x.sha
+                    "sha": deleteTarget.sha
                 })
             };
 
-            fetch(`https://api.github.com/repos/cagov/covid19/contents/${x.path}`, options)
-            .then((result) => {
-                console.log('DELETE Success:', result);
-              })
-            .catch((error) => {
+            await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
+            .then(() => {
+                console.log(`DELETE Success: ${deleteTarget}`);
+            })
+            .catch(error => {
                 console.error('DELETE Error:', error);
-              }); 
-        });
+            }); 
+        }
 
         //Updates
         for(const sourcefile of sourcefiles) {
             const targetfile = targetfiles.find(y=>sourcefile.filename===y.filename);
             const base64 = Base64.encode(sourcefile.content.rendered);
 
-            if(!targetfile) {
-                //ADD
-                const options = {
+            const getOptions = bodyJSON =>
+                ({
                     method: 'PUT',
                     headers: authheader(),
-                    body: JSON.stringify({
-                        "message": `ADD ${sourcefile.filename}`,
-                        "committer": committer,
-                        "branch": "master",
-                        "content": base64
-                    })
-                };
+                    body: JSON.stringify(bodyJSON)
+                });
+            
+            let body = {
+                "message": "",
+                "committer": committer,
+                "branch": "master",
+                "content": base64
+            };
+
+            if(!targetfile) {
+                //ADD
+                body.message=`ADD ${sourcefile.filename}`;
     
-                fetch(`https://api.github.com/repos/cagov/covid19/contents/pages/${sourcefile.filename}.html`, options)
-                .then((result) => {
-                    console.log('ADD Success:', result);
+                await fetch(`${githubApiUrl}contents/${githubSyncFolder}/${sourcefile.filename}.html`, getOptions(body))
+                .then(() => {
+                    console.log(`ADD Success: ${sourcefile.filename}`);
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error('ADD Error:', error);
                 });
                 
             } else {
                 //UPDATE
-                const targetcontent = await fetch(`https://api.github.com/repos/cagov/covid19/git/blobs/${targetfile.sha}`,authoptions())
-                    .then((response) => {
-                        return response.json();
+                const targetcontent = await fetch(`${githubApiUrl}git/blobs/${targetfile.sha}`,authoptions())
+                    .then(response => response.json())
+                    .catch(error => {
+                        console.error('FETCH Blob Error:', error);
                     });
                 
-                if(base64!==targetcontent.content.trim()) {
+                if(base64!==targetcontent.content.replace(/\n/g,'')) {
                     //Update file
-                    const options = {
-                        method: 'PUT',
-                        headers: authheader(),
-                        body: JSON.stringify({
-                            "message": `Update ${targetfile.path}`,
-                            "committer": committer,
-                            "branch": "master",
-                            "sha": targetfile.sha,
-                            "content": base64
-                        })
-                    };
+                    body.message=`Update ${targetfile.path}`;
+                    body['sha']=targetfile.sha;
         
-                    fetch(`https://api.github.com/repos/cagov/covid19/contents/${targetfile.path}`, options)
-                    .then((result) => {
-                        console.log('UPDATE Success:', result);
+                    await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
+                    .then(() => {
+                        console.log(`UPDATE Success: ${targetfile.path}`);
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         console.error('UPDATE Error:', error);
                     });
+                } else {
+                    console.log(`Files matched: ${targetfile.path}`)
                 }
             }       
         }
@@ -134,8 +125,6 @@ module.exports = async function (context, req) {
             }
         };
         
-    } else {
-
     }
 
     context.done();
