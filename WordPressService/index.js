@@ -1,6 +1,6 @@
 const committer = {
-    "name": "WordPressService",
-    "email" : "data@alpha.ca.gov"
+    'name': 'WordPressService',
+    'email': 'data@alpha.ca.gov'
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
@@ -55,15 +55,11 @@ module.exports = async function (context, req) {
         };
 
         await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
-        .then(() => {
-            console.log(`DELETE Success: ${deleteTarget.path}`);
-        })
-        .catch(error => {
-            console.error('DELETE Error:', error);
-        }); 
+            .then(() => {console.log(`DELETE Success: ${deleteTarget.path}`);})
+            .catch(error => {console.error('DELETE Error:', error);}); 
     }
 
-    //Updates
+    //ADD/UPDATE
     for(const sourcefile of sourcefiles) {
         const targetfile = targetfiles.find(y=>sourcefile.filename===y.filename);
         const base64 = Base64.encode(sourcefile.html);
@@ -82,41 +78,31 @@ module.exports = async function (context, req) {
             "content": base64
         };
 
-        if(!targetfile) {
-            //ADD
-            body.message=`ADD ${sourcefile.filename}`;
-
-            await fetch(`${githubApiUrl}contents/${githubSyncFolder}/${sourcefile.filename}.html`, getOptions(body))
-            .then(() => {
-                console.log(`ADD Success: ${sourcefile.filename}`);
-            })
-            .catch(error => {
-                console.error('ADD Error:', error);
-            });
-            
-        } else {
+        if(targetfile) {
             //UPDATE
             const targetcontent = await fetch(`${githubApiUrl}git/blobs/${targetfile.sha}`,authoptions())
                 .then(response => response.json())
-                .catch(error => {
-                    console.error('FETCH Blob Error:', error);
-                });
+                .catch(error => {console.error('FETCH Blob Error:', error);});
             
             if(base64!==targetcontent.content.replace(/\n/g,'')) {
                 //Update file
                 body.message=`Update ${targetfile.path}`;
                 body['sha']=targetfile.sha;
-    
+
                 await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
-                .then(() => {
-                    console.log(`UPDATE Success: ${targetfile.path}`);
-                })
-                .catch(error => {
-                    console.error('UPDATE Error:', error);
-                });
+                    .then(() => {console.log(`UPDATE Success: ${targetfile.path}`);})
+                    .catch(error => {console.error('UPDATE Error:', error);});
             } else {
                 console.log(`Files matched: ${targetfile.path}`)
             }
+        } else {
+            //ADD
+            const newFilePath = `${githubSyncFolder}/${sourcefile.filename}.html`;
+            body.message=`ADD ${newFilePath}`;
+            
+            await fetch(`${githubApiUrl}contents/${newFilePath}`, getOptions(body))
+                .then(() => {console.log(`ADD Success: ${newFilePath}`);})
+                .catch(error => {console.error('ADD Error:', error);});
         }       
     }
 
