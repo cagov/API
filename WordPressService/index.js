@@ -8,6 +8,7 @@ const githubBranch = 'synctest'
 const githubSyncFolder = 'pages/synctest'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/posts';
 const defaultTags = ['covid19'];
+const ignoreFiles = ['index.html','translate.html'];
 
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
@@ -33,7 +34,7 @@ module.exports = async function (context, req) {
             return Promise.reject();
         })
         )
-        .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&x.name!=='index.html'); 
+        .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&!ignoreFiles.includes(x.name)); 
 
     targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
     
