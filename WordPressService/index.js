@@ -28,7 +28,7 @@ module.exports = async function (context, req) {
         const htmltitle = (pagetitle!==rootTitle ? `${pagetitle} - ` : '') + rootTitle;
         const meta = sourcefile.excerpt.rendered.replace(/<p>/,'').replace(/<\/p>/,'').replace(/\n/,'').trim();
 
-        sourcefile['html'] = `---\nlayout: page.njk\ntitle: ${htmltitle}\nmeta: ${meta}\nauthor: State of California\npublishdate: ${sourcefile.modified_gmt}\ntags: ${defaultTags.join(',')}\n---\n`
+        sourcefile['html'] = `---\nlayout: "page.njk"\ntitle: "${htmltitle}"\nmeta: "${meta}"\nauthor: "State of California"\npublishdate: "${sourcefile.modified_gmt}"\ntags: "${defaultTags.join(',')}"\n---\n`
             +`<h1>${pagetitle}</h1>`
             +sourcefile.content.rendered;
     });
