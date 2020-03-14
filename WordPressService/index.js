@@ -119,6 +119,7 @@ module.exports = async function (context, req) {
     const completed = getPacificTimeNow();
 
     pinghistory.push({
+        method: req.method,
         started,
         completed,
         match_count,
