@@ -15,6 +15,8 @@ const ignoreFiles = ['index.html','translate.html'];
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
 module.exports = async function (context, req) {
+    const started = getPacificTimeNow();
+
     let add_count = 0;
     let update_count = 0;
     let delete_count = 0;
@@ -114,11 +116,11 @@ module.exports = async function (context, req) {
         }       
     }
 
-    const date = new Date();
+    const completed = getPacificTimeNow();
 
     pinghistory.push({
-        "date":date.toLocaleDateString(),
-        "time":date.toLocaleTimeString(),
+        started,
+        completed,
         match_count,
         add_count,
         update_count,
@@ -133,6 +135,12 @@ module.exports = async function (context, req) {
     };
 
     context.done();
+}
+
+function getPacificTimeNow() {
+    let usaTime = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
+    usaTime = new Date(usaTime);
+    return usaTime.toLocaleString();
 }
 
 
