@@ -1,3 +1,5 @@
+let pinghistory = [];
+
 const committer = {
     'name': 'WordPressService',
     'email': 'data@alpha.ca.gov'
@@ -13,6 +15,11 @@ const ignoreFiles = ['index.html','translate.html'];
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
 module.exports = async function (context, req) {
+    let add_count = 0;
+    let update_count = 0;
+    let delete_count = 0;
+    let match_count = 0;
+
     const sourcefiles = await fetch(wordPressApiUrl,authoptions())
         .then(response => response.ok ? response.json() : Promise.reject(response))
         .catch(error => {
@@ -55,7 +62,7 @@ module.exports = async function (context, req) {
         };
 
         await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
-            .then(() => {console.log(`DELETE Success: ${deleteTarget.path}`);})
+            .then(() => {console.log(`DELETE Success: ${deleteTarget.path}`);delete_count++;})
             .catch(error => {console.error('DELETE Error:', error);}); 
     }
 
@@ -90,10 +97,11 @@ module.exports = async function (context, req) {
                 body['sha']=targetfile.sha;
 
                 await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
-                    .then(() => {console.log(`UPDATE Success: ${targetfile.path}`);})
+                    .then(() => {console.log(`UPDATE Success: ${targetfile.path}`);update_count++;})
                     .catch(error => {console.error('UPDATE Error:', error);});
             } else {
-                console.log(`Files matched: ${targetfile.path}`)
+                console.log(`Files matched: ${targetfile.path}`);
+                match_count++;
             }
         } else {
             //ADD
@@ -101,13 +109,27 @@ module.exports = async function (context, req) {
             body.message=`ADD ${newFilePath}`;
             
             await fetch(`${githubApiUrl}contents/${newFilePath}`, getOptions(body))
-                .then(() => {console.log(`ADD Success: ${newFilePath}`);})
+                .then(() => {console.log(`ADD Success: ${newFilePath}`);add_count++;})
                 .catch(error => {console.error('ADD Error:', error);});
         }       
     }
 
+    const date = new Date();
+
+    pinghistory.push({
+        "date":date.toLocaleDateString(),
+        "time":date.toLocaleTimeString(),
+        match_count,
+        add_count,
+        update_count,
+        delete_count
+    }) //2020-03-31T00:00:00-08:00
+
     context.res = {
-        body: 'SYNC Complete'
+        body: {pinghistory},
+        headers: {
+            'Content-Type' : 'application/json'
+        }
     };
 
     context.done();
