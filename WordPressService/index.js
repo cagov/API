@@ -10,7 +10,7 @@ const githubBranch = 'staging'
 const githubSyncFolder = 'pages'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/';
 const defaultTags = ['covid19'];
-const ignoreFiles = ['index.html','translate.html'];
+const ignoreFiles = ['index.html'];
 
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
