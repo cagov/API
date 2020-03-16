@@ -6,11 +6,13 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
-const githubBranch = 'synctest'
+const githubBranch = 'staging'
 const githubSyncFolder = 'pages'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/';
 const defaultTags = ['covid19'];
 const ignoreFiles = ['index.html'];
+
+const githubApiContents = 'contents/';
 
 //attachments here...sourcefiles[1]._links['wp:attachment'][0].href
 
@@ -30,7 +32,22 @@ module.exports = async function (context, req) {
     let delete_count = 0;
     let match_count = 0;
 
-    const sourcefiles = await fetchJSON(`${wordPressApiUrl}posts`);
+    const fetchJSON = async (URL, options) => 
+        await fetch(URL,options)
+        .then(response => response.ok ? response.json() : Promise.reject(response))
+        .catch(async response => {
+            const json = await response.json()
+
+            context.res = {
+                body: `fetchJSON error - ${options.method} - ${URL} : ${JSON.stringify(json)}`
+            };
+            console.error(context.res.body);
+            context.done();
+
+            return Promise.reject(context.res.body);
+        });
+
+    const sourcefiles = await fetchJSON(`${wordPressApiUrl}posts`,defaultoptions());
 
     sourcefiles.forEach(sourcefile => {
         sourcefile['filename'] = sourcefile.slug;
@@ -42,7 +59,7 @@ module.exports = async function (context, req) {
             +sourcefile.content.rendered;
     });
 
-    const targetfiles = (await fetchJSON(`${githubApiUrl}contents/${githubSyncFolder}?ref=${githubBranch}`))
+    const targetfiles = (await fetchJSON(`${githubApiUrl}${githubApiContents}${githubSyncFolder}?ref=${githubBranch}`,defaultoptions()))
         .filter(x=>x.type==='file'&&x.name.endsWith('.html')&&!ignoreFiles.includes(x.name)); 
 
     targetfiles.forEach(x=>x['filename']=x.name.split('.')[0]);
@@ -60,9 +77,8 @@ module.exports = async function (context, req) {
             })
         };
 
-        await fetch(`${githubApiUrl}contents/${deleteTarget.path}`, options)
+        await fetchJSON(`${githubApiUrl}${githubApiContents}${deleteTarget.path}`, options)
             .then(() => {console.log(`DELETE Success: ${deleteTarget.path}`);delete_count++;})
-            .catch(error => {console.error('DELETE Error:', error);}); 
     }
 
     //ADD/UPDATE
@@ -86,18 +102,15 @@ module.exports = async function (context, req) {
 
         if(targetfile) {
             //UPDATE
-            const targetcontent = await fetch(`${githubApiUrl}git/blobs/${targetfile.sha}`,authoptions())
-                .then(response => response.json())
-                .catch(error => {console.error('FETCH Blob Error:', error);});
+            const targetcontent = await fetchJSON(`${githubApiUrl}git/blobs/${targetfile.sha}`,defaultoptions())
             
             if(base64!==targetcontent.content.replace(/\n/g,'')) {
                 //Update file
                 body.message=`Update ${targetfile.path}`;
                 body['sha']=targetfile.sha;
 
-                await fetch(`${githubApiUrl}contents/${targetfile.path}`, getOptions(body))
+                await fetchJSON(`${githubApiUrl}${githubApiContents}${targetfile.path}`, getOptions(body))
                     .then(() => {console.log(`UPDATE Success: ${targetfile.path}`);update_count++;})
-                    .catch(error => {console.error('UPDATE Error:', error);});
             } else {
                 console.log(`Files matched: ${targetfile.path}`);
                 match_count++;
@@ -107,26 +120,26 @@ module.exports = async function (context, req) {
             const newFilePath = `${githubSyncFolder}/${sourcefile.filename}.html`;
             body.message=`ADD ${newFilePath}`;
             
-            await fetch(`${githubApiUrl}contents/${newFilePath}`, getOptions(body))
+            await fetchJSON(`${githubApiUrl}${githubApiContents}${newFilePath}`, getOptions(body))
                 .then(() => {console.log(`ADD Success: ${newFilePath}`);add_count++;})
-                .catch(error => {console.error('ADD Error:', error);});
-        }       
+        }
     }
 
-    const completed = getPacificTimeNow();
-
-    pinghistory.unshift({
-        method: req.method,
+    const log = {
         started,
-        completed,
-        match_count,
-        add_count,
-        update_count,
-        delete_count
-    }) //2020-03-31T00:00:00-08:00
+        completed: getPacificTimeNow(),
+        match_count
+    };
+
+    if(req.method==="GET") log.method = req.method;
+    if(add_count>0) log.add_count = add_count;
+    if(update_count>0) log.update_count = update_count;
+    if(delete_count>0) log.delete_count = delete_count;
+
+    pinghistory.unshift(log);
 
     context.res = {
-        body: {pinghistory:pinghistory},
+        body: {pinghistory},
         headers: {
             'Content-Type' : 'application/json'
         }
@@ -149,16 +162,8 @@ function authheader() {
     };
 }
 
-function authoptions() {
-    return {"headers":authheader() }
+function defaultoptions() {
+    return {method: 'GET', headers:authheader() }
 }
-
-const fetchJSON = async (URL) => 
-    await fetch(URL,authoptions())
-    .then(response => response.ok ? response.json() : Promise.reject(response))
-    .catch(error => {
-        console.error(`fetchJSON error - ${URL}`, error);
-        return Promise.reject();
-    });
 
 const Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/++[++^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
