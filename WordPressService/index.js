@@ -6,7 +6,7 @@ const committer = {
 };
 
 const githubApiUrl = 'https://api.github.com/repos/cagov/covid19/';
-const githubBranch = 'staging'
+const githubBranch = 'synctest'
 const githubSyncFolder = 'pages'; //no slash at the end
 const wordPressApiUrl = 'https://as-go-covid19-d-001.azurewebsites.net/wp-json/wp/v2/';
 const defaultTags = ['covid19'];
@@ -115,7 +115,7 @@ module.exports = async function (context, req) {
 
     const completed = getPacificTimeNow();
 
-    pinghistory.push({
+    pinghistory.unshift({
         method: req.method,
         started,
         completed,
@@ -126,7 +126,7 @@ module.exports = async function (context, req) {
     }) //2020-03-31T00:00:00-08:00
 
     context.res = {
-        body: {pinghistory},
+        body: {pinghistory:pinghistory},
         headers: {
             'Content-Type' : 'application/json'
         }
