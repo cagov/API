@@ -6,17 +6,18 @@ module.exports = async function (context, req) {
     
     if (input) {
         let county;
-        
+        let foundZips = [];
         zips.forEach( (item) => {
             if(input == item.zip) {
                 county = item;
                 console.log(county)
+                foundZips.push(item)
             }
         })
 
         if (county) 
             context.res = {
-                body: county,
+                body: foundZips,
                 
                 headers: {
                     'Content-Type' : 'application/json',
