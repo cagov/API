@@ -4,7 +4,7 @@ const fs = require('fs')
 const excelToJson = require('convert-excel-to-json');
  
 const result = excelToJson({
-  source: fs.readFileSync('./PlasmaCenterDatabase_CCP_5.12.20_VP.xlsx'),
+  source: fs.readFileSync('./PlasmaCenterDatabase_CCP_5.17.20.xlsx'),
   header:{
       rows: 1
   },
@@ -16,10 +16,11 @@ const result = excelToJson({
     E: 'CityStateZip',
     F: 'Contact',
     G: 'Website'
-  }
+  },
+
 });
 
-fs.writeFile('./plasmalocs.json', JSON.stringify(result.Sheet1), 'utf8', function() {
+fs.writeFile('./plasmalocs.json', JSON.stringify(result["Dynamic Data"]), 'utf8', function() {
   console.log('done')
 })
 
