@@ -10,7 +10,7 @@ module.exports = async function (context, req) {
     if(req.body) {
         const myURL = new URL(req.body.url);
         let site = myURL.hostname;
-        let helpful = req.body.helpful === 'true';
+        let helpful = req.body.helpful === 'yes';
         let comments = req.body.comments;
         let timestamp = new Date().getTime()
         let insertBody = {
