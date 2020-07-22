@@ -1,6 +1,10 @@
 # FunctionApps
 Used to develop Function As A Service Apps in support of Alpha.CA.gov.
 
+## Deployment
+
+- The api.alpha.ca.gov domain is used to point at the ```FA-GO-ALPH-D-002``` Azure FAAS
+- Code changes checked into master are also automatically deployed to ```FA-GO-ALPH-D-001``` Azure FAAS automatically but there is no subdomain in use there
 
 # Setup 
 ## Install "Azure Functions" Extention
