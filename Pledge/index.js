@@ -24,12 +24,12 @@ module.exports = async function (context, req) {
     return { message: `Created family item with id: ${itemBody.id}` };
   }
 
-  // let item = await createItem(insertBody);
+  let item = await createItem(insertBody);
 
   context.res = {
     headers: {
       "Content-Type": "application/json",
     },
-    body: insertBody,
+    body: item,
   };
 };
