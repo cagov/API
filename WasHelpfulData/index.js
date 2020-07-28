@@ -23,6 +23,12 @@ module.exports = async function (context, req) {
           parameters: [],
         };
       }
+      if (context.req.query.clause) {
+        querySpec = {
+          query: `SELECT * FROM c WHERE c.time >= ${context.req.params.start} AND c.time <= ${context.req.params.end} AND (${decodeURIComponent(context.req.query.clause)})`,
+          parameters: [],
+        };
+      }
     }
 
     const { resources: results } = await client
