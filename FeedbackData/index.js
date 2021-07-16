@@ -10,9 +10,12 @@ module.exports = async function (context, req) {
   async function queryContainer() {
     let startDate = new Date().getTime() - (1000 * 90 * 24 * 60 * 60);
     // remove some fields
-    // figure out what the connection params are
+    let querySpec = {
+      query: `SELECT * FROM c WHERE c.time >= ${startDate}`,
+      parameters: [],
+    };
     if (context.req.query.url) {
-      let querySpec = {
+      querySpec = {
         query: `SELECT * FROM c WHERE c.time >= ${startDate} AND CONTAINS(c.url, "${decodeURIComponent(context.req.query.url)}")`,
         parameters: [],
       };

@@ -2,10 +2,10 @@ let config = {}
 config.endpoint = process.env["COSMOS_ENDPOINT_FEEDBACK"];
 config.key = process.env["COSMOS_KEY_FEEDBACK"];
 config.database = {
-  id: 'PageRatings'
+  id: 'Feedback'
 }
 config.container = {
-  id: 'WasHelpful'
+  id: 'pagefeedback'
 }
 
 module.exports = config
