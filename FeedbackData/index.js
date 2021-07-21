@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 let config = require("./config.js");
+const url = require('url');
 const endpoint = config.endpoint;
 const key = config.key;
 const databaseId = config.database.id;
@@ -13,13 +14,13 @@ module.exports = async function (context, req) {
       query: `SELECT * FROM c WHERE c.time >= ${startDate}`,
       parameters: [],
     };
-    if (context.req.query.url && req.query.requestor === config.requestor) {
+    if (req.query.url && req.query.requestor === config.requestor) {
       querySpec = {
         query: `SELECT * FROM c WHERE c.time >= ${startDate} AND CONTAINS(c.url, "${decodeURIComponent(context.req.query.url)}")`,
         parameters: [],
       };
     } else {
-      return {"error": "url query parameter required"};
+      return {"error": "missing parameters"};
     }
 
     const { resources: results } = await client
@@ -28,7 +29,10 @@ module.exports = async function (context, req) {
       .items.query(querySpec)
       .fetchAll();
     return results.map(item => {
-      // reorganizing object per data team's specs
+      let u = new URL(item.url);
+      item.page = u.origin;
+      item.pagesection = '/'+u.pathname;
+      // there are no translated language urls on cannabis or drought
       delete item._rid;
       delete item._self;
       delete item._etag;

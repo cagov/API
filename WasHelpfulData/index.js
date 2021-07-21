@@ -1,34 +1,51 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 let config = require("./config.js");
+const url = require('url');
 const endpoint = config.endpoint;
 const key = config.key;
 const databaseId = config.database.id;
 const containerId = config.container.id;
 const client = new CosmosClient({ endpoint, key });
+let initialPaths = [
+  {
+    "prefix": '/ar/',
+    "language": "Arabic"
+  },
+  {
+    "prefix": '/es/',
+    "language": "Spanish"
+  },
+  {
+    "prefix": '/ko/',
+    "language": "Korean"
+  },
+  {
+    "prefix": '/tl/',
+    "language": "Filipino"
+  },
+  {
+    "prefix": '/vi/',
+    "language": "Vietnamese"
+  },
+  {
+    "prefix": '/zh-hans/',
+    "language": "Chinese Simplified"
+  },
+  {
+    "prefix": '/zh-hant/',
+    "language": "Chinese Traditional"
+  }
+];
 
 module.exports = async function (context, req) {
   async function queryContainer() {
+    let startDate = new Date().getTime() - (1000 * 14 * 24 * 60 * 60);
     let querySpec = {
-      query: "SELECT * FROM c",
+      query: `SELECT * FROM c WHERE c.time >= ${startDate}`,
       parameters: [],
     };
-    if (context.req.params.start && context.req.params.end) {
-      querySpec = {
-        query: `SELECT * FROM c WHERE c.time >= ${context.req.params.start} AND c.time <= ${context.req.params.end}`,
-        parameters: [],
-      };
-      if (context.req.query.url) {
-        querySpec = {
-          query: `SELECT * FROM c WHERE c.time >= ${context.req.params.start} AND c.time <= ${context.req.params.end} AND CONTAINS(c.url, "${decodeURIComponent(context.req.query.url)}")`,
-          parameters: [],
-        };
-      }
-      if (context.req.query.clause) {
-        querySpec = {
-          query: `SELECT * FROM c WHERE c.time >= ${context.req.params.start} AND c.time <= ${context.req.params.end} AND (${decodeURIComponent(context.req.query.clause)})`,
-          parameters: [],
-        };
-      }
+    if (req.query.requestor !== config.requestor) {
+      return {"error": "missing parameters"};
     }
 
     const { resources: results } = await client
@@ -36,11 +53,28 @@ module.exports = async function (context, req) {
       .container(containerId)
       .items.query(querySpec)
       .fetchAll();
-    for (var queryResult of results) {
-      let resultString = JSON.stringify(queryResult);
-      console.log(`\tQuery returned ${resultString}\n`);
-    }
-    return results;
+    console.log("TOTAL RESULTS")
+    console.log(results.length)
+    return results.map(item => {
+      let u = new URL(item.url);
+      item.page = u.pathname + u.search;
+      item.pagesection = u.hash;
+      initialPaths.forEach(x => {
+        if(u.pathname.indexOf(x.prefix) === 0) {
+          item.language = x.language;
+          item.page = u.pathname.replace(x.prefix,'/')  + u.search;
+        }  
+      })
+      delete item._rid;
+      delete item._self;
+      delete item._etag;
+      delete item._attachments;
+      delete item.time;
+      item.helpful = (item.helpful ? "yes" : "no");
+      item.timestamp = item._ts;
+      delete item._ts;
+      return item;
+    }).sort((a, b) => a - b);
   }
 
   let responseMessage = await queryContainer();
