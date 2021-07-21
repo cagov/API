@@ -39,7 +39,7 @@ let initialPaths = [
 
 module.exports = async function (context, req) {
   async function queryContainer() {
-    let startDate = new Date().getTime() - (1000 * 14 * 24 * 60 * 60);
+    let startDate = new Date().getTime() - (1000 * 30 * 24 * 60 * 60);
     let querySpec = {
       query: `SELECT * FROM c WHERE c.time >= ${startDate}`,
       parameters: [],
