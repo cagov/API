@@ -30,8 +30,9 @@ module.exports = async function (context, req) {
       .fetchAll();
     return results.map(item => {
       let u = new URL(item.url);
-      item.page = u.origin;
-      item.pagesection = '/'+u.pathname;
+      item.page = u.pathname;
+      let re = new RegExp('/#.+');
+      item.page_section = re.exec(u);
       // there are no translated language urls on cannabis or drought
       delete item._rid;
       delete item._self;
