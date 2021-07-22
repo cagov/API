@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 let config = require("./config.js");
+const url = require('url');
 const endpoint = config.endpoint;
 const key = config.key;
 const databaseId = config.database.id;
@@ -9,18 +10,17 @@ const client = new CosmosClient({ endpoint, key });
 module.exports = async function (context, req) {
   async function queryContainer() {
     let startDate = new Date().getTime() - (1000 * 90 * 24 * 60 * 60);
-    // remove some fields
     let querySpec = {
       query: `SELECT * FROM c WHERE c.time >= ${startDate}`,
       parameters: [],
     };
-    if (context.req.query.url) {
+    if (req.query.url && req.query.requestor === config.requestor) {
       querySpec = {
         query: `SELECT * FROM c WHERE c.time >= ${startDate} AND CONTAINS(c.url, "${decodeURIComponent(context.req.query.url)}")`,
         parameters: [],
       };
     } else {
-      return {"error": "url query parameter required"};
+      return {"error": "missing parameters"};
     }
 
     const { resources: results } = await client
@@ -28,16 +28,25 @@ module.exports = async function (context, req) {
       .container(containerId)
       .items.query(querySpec)
       .fetchAll();
-    for (var queryResult of results) {
-      let resultString = JSON.stringify(queryResult);
-      console.log(`\tQuery returned ${resultString}\n`);
-    }
-    return results;
+    return results.map(item => {
+      let u = new URL(item.url);
+      item.page = u.origin;
+      item.pagesection = '/'+u.pathname;
+      // there are no translated language urls on cannabis or drought
+      delete item._rid;
+      delete item._self;
+      delete item._etag;
+      delete item._attachments;
+      delete item.time;
+      item.helpful = (item.helpful ? "yes" : "no");
+      item.timestamp = item._ts;
+      delete item._ts;
+      return item;
+    }).sort((a, b) => a - b);
   }
 
   let responseMessage = await queryContainer();
   context.res = {
-    // status: 200, /* Defaults to 200 */
     body: responseMessage,
   };
 };
