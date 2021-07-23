@@ -35,7 +35,13 @@ module.exports = async function (context, req) {
       item.page_section = re.exec(u);
       // there are no translated language urls on cannabis or drought
       item.helpful = (item.helpful ? "yes" : "no");
-      item.timestamp = item.time;
+      let date_obj = new Date(item.time);
+      // adjust 0 before single digit date
+      let date = ("0" + date_obj.getDate()).slice(-2);
+      // current month
+      let month = ("0" + (date_obj.getMonth() + 1)).slice(-2);
+
+      item.timestamp = date_obj.getFullYear() + "-" + month + "-" + date + " " + date_obj.getHours() + ":" + date_obj.getMinutes() + ":" + date_obj.getSeconds();
       delete item._attachments;
       delete item._etag;
       delete item._rid;
