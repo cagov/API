@@ -59,20 +59,21 @@ module.exports = async function (context, req) {
       let u = new URL(item.url);
       item.page = u.pathname + u.search;
       item.pagesection = u.hash;
+      item.language = 'English';
       initialPaths.forEach(x => {
         if(u.pathname.indexOf(x.prefix) === 0) {
           item.language = x.language;
           item.page = u.pathname.replace(x.prefix,'/')  + u.search;
         }  
       })
+      item.helpful = (item.helpful ? "yes" : "no");
+      item.timestamp = item.time;
+      delete item._attachments;
+      delete item._etag;
       delete item._rid;
       delete item._self;
-      delete item._etag;
-      delete item._attachments;
-      delete item.time;
-      item.helpful = (item.helpful ? "yes" : "no");
-      item.timestamp = item._ts;
       delete item._ts;
+      delete item.time;
       return item;
     }).sort((a, b) => a - b);
   }
