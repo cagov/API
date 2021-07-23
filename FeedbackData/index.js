@@ -34,14 +34,14 @@ module.exports = async function (context, req) {
       let re = new RegExp('/#.+');
       item.page_section = re.exec(u);
       // there are no translated language urls on cannabis or drought
+      item.helpful = (item.helpful ? "yes" : "no");
+      item.timestamp = item.time;
+      delete item._attachments;
+      delete item._etag;
       delete item._rid;
       delete item._self;
-      delete item._etag;
-      delete item._attachments;
-      delete item.time;
-      item.helpful = (item.helpful ? "yes" : "no");
-      item.timestamp = item._ts;
       delete item._ts;
+      delete item.time;
       return item;
     }).sort((a, b) => a - b);
   }
