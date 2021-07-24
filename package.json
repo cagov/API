@@ -15,6 +15,7 @@
   "dependencies": {
     "@azure/cosmos": "^3.7.4",
     "CHPIncidents": "file:CHPIncidents",
+    "date-fns": "^2.23.0",
     "FoodBanks": "file:FoodBanks",
     "geolib": "^3.2.1"
   }
