@@ -40,13 +40,14 @@ module.exports = async function (context, req) {
       // current month
       let month = ("0" + (date_obj.getMonth() + 1)).slice(-2);
 
-      item.timestamp = item._ts; // date_obj.getFullYear() + "-" + month + "-" + date + " " + date_obj.getHours() + ":" + date_obj.getMinutes() + ":" + date_obj.getSeconds();
+      item.timestamp = parseInt(date_obj.getFullYear() + month + date + date_obj.getHours() + date_obj.getMinutes() + date_obj.getSeconds());
       delete item._attachments;
       delete item._etag;
       delete item._rid;
       delete item._self;
       delete item._ts;
-      // delete item.time;
+      item.epoch_time = item.time;
+      delete item.time;
       return item;
     }).sort((a, b) => a - b);
   }
