@@ -1,6 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 let config = require("./config.js");
 const url = require('url');
+const dateFns = require('date-fns');
 const endpoint = config.endpoint;
 const key = config.key;
 const databaseId = config.database.id;
@@ -34,19 +35,13 @@ module.exports = async function (context, req) {
       item.page_section = u.hash;
       // there are no translated language urls on cannabis or drought
       item.helpful = (item.helpful ? "yes" : "no");
-      let date_obj = new Date(item.time);
-      // adjust 0 before single digit date
-      let date = ("0" + date_obj.getDate()).slice(-2);
-      // current month
-      let month = ("0" + (date_obj.getMonth() + 1)).slice(-2);
 
-      item.timestamp = parseInt(date_obj.getFullYear() + month + date + date_obj.getHours() + date_obj.getMinutes() + date_obj.getSeconds());
+      item.timestamp = dateFns.format(new Date(item.time), 'MMM dd, yyyy h:m a')
       delete item._attachments;
       delete item._etag;
       delete item._rid;
       delete item._self;
       delete item._ts;
-      item.epoch_time = item.time;
       delete item.time;
       return item;
     }).sort((a, b) => a - b);
