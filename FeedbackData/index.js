@@ -41,7 +41,7 @@ module.exports = async function (context, req) {
       // current month
       let month = ("0" + (date_obj.getMonth() + 1)).slice(-2);
 
-      item.timestamp = date_obj.getFullYear() + "-" + month + "-" + date + " " + date_obj.getHours() + ":" + date_obj.getMinutes() + ":" + date_obj.getSeconds();
+      item.timestamp = date_obj.getFullYear() + "-" + month + "-" + date; //  + " " + date_obj.getHours() + ":" + date_obj.getMinutes() + ":" + date_obj.getSeconds()
       delete item._attachments;
       delete item._etag;
       delete item._rid;
