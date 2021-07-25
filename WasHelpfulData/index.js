@@ -1,6 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 let config = require("./config.js");
 const url = require('url');
+const dateFns = require('date-fns');
 const endpoint = config.endpoint;
 const key = config.key;
 const databaseId = config.database.id;
@@ -67,7 +68,8 @@ module.exports = async function (context, req) {
         }  
       })
       item.helpful = (item.helpful ? "yes" : "no");
-      item.timestamp = item.time;
+      item.timestamp = dateFns.format(new Date(item.time), 'MMM dd, yyyy h:m a');
+      item.epoch_time = item.time;
       delete item._attachments;
       delete item._etag;
       delete item._rid;
