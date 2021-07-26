@@ -69,7 +69,6 @@ module.exports = async function (context, req) {
       })
       item.helpful = (item.helpful ? "yes" : "no");
       item.timestamp = dateFns.format(new Date(item.time), 'MMM dd, yyyy h:m a');
-      item.epoch_time = item.time;
       delete item._attachments;
       delete item._etag;
       delete item._rid;
